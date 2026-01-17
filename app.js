@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function initSplashScreen() {
     const splashScreen = document.getElementById('splash-screen');
     const mainApp = document.getElementById('main-app');
-    
+
     setTimeout(() => {
         splashScreen.classList.add('hidden');
         mainApp.classList.remove('hidden');
@@ -157,7 +157,7 @@ function initSplashScreen() {
 // Navigation
 function initNavigation() {
     const navItems = document.querySelectorAll('.nav-item');
-    
+
     navItems.forEach(item => {
         item.addEventListener('click', () => {
             const page = item.dataset.page;
@@ -171,14 +171,14 @@ function navigateTo(page) {
     document.querySelectorAll('.nav-item').forEach(item => {
         item.classList.toggle('active', item.dataset.page === page);
     });
-    
+
     // Update pages
     document.querySelectorAll('.page').forEach(p => {
         p.classList.toggle('active', p.id === `page-${page}`);
     });
-    
+
     appState.currentPage = page;
-    
+
     // Refresh page content
     if (page === 'home') initHomePage();
     if (page === 'stats') updateStatsPage();
@@ -197,11 +197,11 @@ function updateGreeting() {
     const greetingTime = document.querySelector('.greeting-time');
     const userName = document.querySelector('.user-name');
     const hour = new Date().getHours();
-    
+
     let greeting = 'Günaydın';
     if (hour >= 12 && hour < 18) greeting = 'İyi günler';
     else if (hour >= 18) greeting = 'İyi akşamlar';
-    
+
     greetingTime.textContent = `${greeting},`;
     userName.textContent = appState.userData.name;
 }
@@ -210,13 +210,13 @@ function updateTodayCard() {
     const today = new Date();
     const dayKey = dayMapping[today.getDay()];
     const todayWorkout = workoutProgram[dayKey];
-    
+
     document.getElementById('today-workout-name').textContent = todayWorkout.displayName;
     document.getElementById('exercise-count').textContent = todayWorkout.exercises.length;
-    
+
     const musclesContainer = document.getElementById('today-muscles');
     musclesContainer.innerHTML = '';
-    
+
     if (todayWorkout.isRestDay) {
         musclesContainer.innerHTML = '<span class="muscle-tag">🌟 Dinlenme Günü</span>';
         document.getElementById('start-today-workout').textContent = 'Dinlenme Günü';
@@ -236,7 +236,7 @@ function updateTodayCard() {
         document.getElementById('start-today-workout').disabled = false;
         document.getElementById('start-today-workout').style.opacity = '1';
     }
-    
+
     // Today badge
     const todayBadge = document.getElementById('today-badge');
     if (todayWorkout.isRestDay) {
@@ -244,7 +244,7 @@ function updateTodayCard() {
     } else {
         todayBadge.innerHTML = `<span id="exercise-count">${todayWorkout.exercises.length}</span> Egzersiz`;
     }
-    
+
     // Start workout button
     document.getElementById('start-today-workout').onclick = () => {
         if (!todayWorkout.isRestDay) {
@@ -258,12 +258,12 @@ function updateWeekProgress() {
     const today = new Date();
     const startOfWeek = new Date(today);
     startOfWeek.setDate(today.getDate() - today.getDay() + 1); // Monday
-    
+
     container.innerHTML = '';
-    
+
     const weekDays = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
     const dayKeys = ['pazartesi', 'sali', 'carsamba', 'persembe', 'cuma', 'cumartesi', 'pazar'];
-    
+
     for (let i = 0; i < 7; i++) {
         const date = new Date(startOfWeek);
         date.setDate(startOfWeek.getDate() + i);
@@ -272,12 +272,12 @@ function updateWeekProgress() {
         const workout = workoutProgram[dayKeys[i]];
         const dateStr = date.toISOString().split('T')[0];
         const isCompleted = appState.userData.workoutHistory.some(h => h.date === dateStr);
-        
+
         let classes = 'week-day';
         if (isToday) classes += ' today';
         if (isCompleted) classes += ' completed';
         if (workout.isRestDay) classes += ' rest';
-        
+
         container.innerHTML += `
             <div class="${classes}">
                 <span class="week-day-name">${weekDays[i]}</span>
@@ -285,11 +285,11 @@ function updateWeekProgress() {
             </div>
         `;
     }
-    
+
     // Update week dates
     const endOfWeek = new Date(startOfWeek);
     endOfWeek.setDate(startOfWeek.getDate() + 6);
-    document.getElementById('week-dates').textContent = 
+    document.getElementById('week-dates').textContent =
         `${startOfWeek.getDate()} - ${endOfWeek.getDate()} ${monthNames[endOfWeek.getMonth()]}`;
 }
 
@@ -303,14 +303,14 @@ function updateUpcomingWorkouts() {
     const container = document.getElementById('upcoming-workouts');
     const today = new Date();
     container.innerHTML = '';
-    
+
     let count = 0;
     for (let i = 1; i <= 7 && count < 3; i++) {
         const date = new Date(today);
         date.setDate(today.getDate() + i);
         const dayKey = dayMapping[date.getDay()];
         const workout = workoutProgram[dayKey];
-        
+
         if (!workout.isRestDay) {
             container.innerHTML += `
                 <div class="upcoming-item" data-day="${dayKey}">
@@ -332,7 +332,7 @@ function updateUpcomingWorkouts() {
             count++;
         }
     }
-    
+
     // Add click handlers
     container.querySelectorAll('.upcoming-item').forEach(item => {
         item.addEventListener('click', () => {
@@ -349,7 +349,7 @@ function updateUpcomingWorkouts() {
 // Schedule Page
 function initSchedulePage() {
     const tabs = document.querySelectorAll('.schedule-tab');
-    
+
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
             tabs.forEach(t => t.classList.remove('active'));
@@ -357,21 +357,21 @@ function initSchedulePage() {
             renderSchedule(tab.dataset.day);
         });
     });
-    
+
     renderSchedule('all');
 }
 
 function renderSchedule(filter) {
     const container = document.getElementById('schedule-list');
     container.innerHTML = '';
-    
-    const days = filter === 'all' 
-        ? Object.keys(workoutProgram) 
+
+    const days = filter === 'all'
+        ? Object.keys(workoutProgram)
         : [filter];
-    
+
     days.forEach(dayKey => {
         const workout = workoutProgram[dayKey];
-        
+
         let dayHtml = `
             <div class="schedule-day" data-day="${dayKey}">
                 <div class="schedule-day-header">
@@ -382,7 +382,7 @@ function renderSchedule(filter) {
                     ${!workout.isRestDay ? `<span class="schedule-day-badge">${workout.exercises.length} Egzersiz</span>` : ''}
                 </div>
         `;
-        
+
         if (workout.isRestDay) {
             dayHtml += `
                 <div class="rest-day-indicator">
@@ -413,11 +413,11 @@ function renderSchedule(filter) {
             });
             dayHtml += '</div>';
         }
-        
+
         dayHtml += '</div>';
         container.innerHTML += dayHtml;
     });
-    
+
     // Add start workout button for each day
     days.forEach(dayKey => {
         const workout = workoutProgram[dayKey];
@@ -451,7 +451,7 @@ function initWorkoutPage() {
             alert('Bugün dinlenme günü! Başka bir gün seçin.');
         }
     });
-    
+
     document.getElementById('cancel-workout-btn').addEventListener('click', cancelWorkout);
     document.getElementById('pause-workout-btn').addEventListener('click', togglePause);
     document.getElementById('complete-set-btn').addEventListener('click', completeSet);
@@ -463,7 +463,7 @@ function initWorkoutPage() {
 function startWorkout(dayKey) {
     const workout = workoutProgram[dayKey];
     if (!workout || workout.isRestDay) return;
-    
+
     appState.activeWorkout = {
         dayKey,
         workout,
@@ -475,22 +475,22 @@ function startWorkout(dayKey) {
     appState.currentSetIndex = 0;
     appState.completedSets = workout.exercises.map(ex => Array(ex.sets).fill(false));
     appState.isPaused = false;
-    
+
     // Navigate to workout page
     navigateTo('workout');
-    
+
     // Show active workout UI
     document.getElementById('no-workout').classList.add('hidden');
     document.getElementById('active-workout').classList.remove('hidden');
     document.getElementById('workout-complete').classList.add('hidden');
-    
+
     // Update header
     document.getElementById('workout-day-title').textContent = workout.displayName;
     document.getElementById('exercises-total').textContent = workout.exercises.length;
-    
+
     // Start timer
     startWorkoutTimer();
-    
+
     // Render current exercise
     renderCurrentExercise();
     renderUpcomingExercises();
@@ -499,9 +499,9 @@ function startWorkout(dayKey) {
 
 function startWorkoutTimer() {
     appState.workoutStartTime = Date.now();
-    
+
     if (appState.workoutTimer) clearInterval(appState.workoutTimer);
-    
+
     appState.workoutTimer = setInterval(() => {
         if (!appState.isPaused) {
             const elapsed = Date.now() - appState.workoutStartTime;
@@ -519,45 +519,53 @@ function formatTime(ms) {
 
 function renderCurrentExercise() {
     const exercise = appState.activeWorkout.workout.exercises[appState.currentExerciseIndex];
-    
+
+    // Update exercise image
+    const exerciseImg = document.getElementById('current-exercise-img');
+    exerciseImg.src = `images/${exercise.image}`;
+    exerciseImg.alt = exercise.name;
+    exerciseImg.onerror = function () {
+        this.style.display = 'none';
+    };
+
     document.getElementById('current-exercise-num').textContent = appState.currentExerciseIndex + 1;
     document.getElementById('exercise-name').textContent = exercise.name;
     document.getElementById('exercise-target').textContent = exercise.target;
     document.getElementById('exercise-sets').textContent = `${exercise.sets} Set`;
     document.getElementById('exercise-reps').textContent = `${exercise.reps} Tekrar`;
     document.getElementById('exercise-intensity').textContent = exercise.intensity;
-    
+
     // Render sets
     const setsContainer = document.getElementById('sets-container');
     setsContainer.innerHTML = '';
-    
+
     for (let i = 0; i < exercise.sets; i++) {
         const isCompleted = appState.completedSets[appState.currentExerciseIndex][i];
         const isActive = i === appState.currentSetIndex && !isCompleted;
-        
+
         const setBtn = document.createElement('button');
         setBtn.className = 'set-btn';
         if (isActive) setBtn.classList.add('active');
         if (isCompleted) setBtn.classList.add('completed');
-        
-        setBtn.innerHTML = isCompleted 
+
+        setBtn.innerHTML = isCompleted
             ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>`
             : `<span>Set</span><span>${i + 1}</span>`;
-        
+
         setBtn.onclick = () => {
             if (!isCompleted) {
                 appState.currentSetIndex = i;
                 renderCurrentExercise();
             }
         };
-        
+
         setsContainer.appendChild(setBtn);
     }
-    
+
     // Update complete button text
     const completeBtn = document.getElementById('complete-set-btn');
     const allSetsCompleted = appState.completedSets[appState.currentExerciseIndex].every(s => s);
-    
+
     if (allSetsCompleted) {
         const isLastExercise = appState.currentExerciseIndex === appState.activeWorkout.workout.exercises.length - 1;
         completeBtn.innerHTML = isLastExercise
@@ -571,10 +579,10 @@ function renderCurrentExercise() {
 function renderUpcomingExercises() {
     const container = document.getElementById('upcoming-exercises');
     container.innerHTML = '';
-    
+
     const exercises = appState.activeWorkout.workout.exercises;
     const startIdx = appState.currentExerciseIndex + 1;
-    
+
     for (let i = startIdx; i < Math.min(startIdx + 3, exercises.length); i++) {
         const exercise = exercises[i];
         container.innerHTML += `
@@ -587,7 +595,7 @@ function renderUpcomingExercises() {
             </div>
         `;
     }
-    
+
     if (container.innerHTML === '') {
         container.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 16px;">Bu son egzersiz!</p>';
     }
@@ -597,9 +605,9 @@ function updateWorkoutProgress() {
     const totalSets = appState.completedSets.flat().length;
     const completedSets = appState.completedSets.flat().filter(s => s).length;
     const progress = (completedSets / totalSets) * 100;
-    
+
     document.getElementById('workout-progress-fill').style.width = `${progress}%`;
-    
+
     // Count completed exercises
     const completedExercises = appState.completedSets.filter(sets => sets.every(s => s)).length;
     document.getElementById('exercises-done').textContent = completedExercises;
@@ -609,11 +617,11 @@ function completeSet() {
     const currentExercise = appState.activeWorkout.workout.exercises[appState.currentExerciseIndex];
     const currentSets = appState.completedSets[appState.currentExerciseIndex];
     const allSetsCompleted = currentSets.every(s => s);
-    
+
     if (allSetsCompleted) {
         // Move to next exercise or finish
         const isLastExercise = appState.currentExerciseIndex === appState.activeWorkout.workout.exercises.length - 1;
-        
+
         if (isLastExercise) {
             completeWorkout();
         } else {
@@ -626,21 +634,21 @@ function completeSet() {
     } else {
         // Complete current set
         appState.completedSets[appState.currentExerciseIndex][appState.currentSetIndex] = true;
-        
+
         // Vibrate if enabled
         if (appState.userData.settings.vibration && navigator.vibrate) {
             navigator.vibrate(100);
         }
-        
+
         // Check if more sets remain
         const nextSetIndex = currentSets.findIndex((s, i) => i > appState.currentSetIndex && !s);
-        
+
         if (nextSetIndex !== -1) {
             // Show rest timer
             showRestTimer();
             appState.currentSetIndex = nextSetIndex;
         }
-        
+
         renderCurrentExercise();
         updateWorkoutProgress();
     }
@@ -649,12 +657,12 @@ function completeSet() {
 function showRestTimer() {
     const restTimer = document.getElementById('rest-timer');
     restTimer.classList.remove('hidden');
-    
+
     let remaining = appState.userData.settings.restDuration;
     const total = remaining;
-    
+
     document.getElementById('rest-time').textContent = remaining;
-    
+
     // Add SVG gradient definition if not exists
     const restProgress = document.getElementById('rest-progress');
     if (!document.getElementById('restGradient')) {
@@ -668,20 +676,20 @@ function showRestTimer() {
         `;
         svg.insertBefore(defs, svg.firstChild);
     }
-    
+
     appState.restTimer = setInterval(() => {
         remaining--;
         document.getElementById('rest-time').textContent = remaining;
-        
+
         // Update circle progress
         const circumference = 2 * Math.PI * 45;
         const offset = circumference * (1 - remaining / total);
         restProgress.style.strokeDashoffset = offset;
-        
+
         if (remaining <= 0) {
             clearInterval(appState.restTimer);
             hideRestTimer();
-            
+
             // Vibrate when rest is complete
             if (appState.userData.settings.vibration && navigator.vibrate) {
                 navigator.vibrate([100, 50, 100]);
@@ -712,7 +720,7 @@ function addRestTime() {
 function togglePause() {
     appState.isPaused = !appState.isPaused;
     const pauseBtn = document.getElementById('pause-workout-btn');
-    
+
     if (appState.isPaused) {
         pauseBtn.innerHTML = `
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -738,14 +746,14 @@ function cancelWorkout() {
 function completeWorkout() {
     const elapsed = Date.now() - appState.workoutStartTime;
     const totalSets = appState.completedSets.flat().filter(s => s).length;
-    
+
     document.getElementById('complete-time').textContent = formatTime(elapsed);
     document.getElementById('complete-exercises').textContent = appState.activeWorkout.workout.exercises.length;
     document.getElementById('complete-sets').textContent = totalSets;
-    
+
     document.getElementById('active-workout').classList.add('hidden');
     document.getElementById('workout-complete').classList.remove('hidden');
-    
+
     // Save workout to history
     const workoutData = {
         date: new Date().toISOString().split('T')[0],
@@ -756,16 +764,16 @@ function completeWorkout() {
         sets: totalSets,
         timestamp: Date.now()
     };
-    
+
     appState.userData.workoutHistory.push(workoutData);
     appState.userData.totalWorkouts++;
     appState.userData.totalTime += workoutData.duration;
-    
+
     // Update streak
     updateStreak();
-    
+
     saveUserData();
-    
+
     // Stop timer
     if (appState.workoutTimer) {
         clearInterval(appState.workoutTimer);
@@ -783,22 +791,22 @@ function endWorkout(completed) {
         clearInterval(appState.workoutTimer);
         appState.workoutTimer = null;
     }
-    
+
     if (appState.restTimer) {
         clearInterval(appState.restTimer);
         appState.restTimer = null;
     }
-    
+
     appState.activeWorkout = null;
     appState.currentExerciseIndex = 0;
     appState.currentSetIndex = 0;
     appState.completedSets = [];
-    
+
     document.getElementById('no-workout').classList.remove('hidden');
     document.getElementById('active-workout').classList.add('hidden');
     document.getElementById('workout-complete').classList.add('hidden');
     document.getElementById('rest-timer').classList.add('hidden');
-    
+
     if (completed) {
         initHomePage();
     }
@@ -807,22 +815,22 @@ function endWorkout(completed) {
 function updateStreak() {
     const today = new Date().toISOString().split('T')[0];
     const history = appState.userData.workoutHistory;
-    
+
     if (history.length === 0) {
         appState.userData.streak = 1;
         return;
     }
-    
+
     // Sort by date descending
     const sorted = [...history].sort((a, b) => new Date(b.date) - new Date(a.date));
-    
+
     let streak = 0;
     let checkDate = new Date(today);
-    
+
     for (const workout of sorted) {
         const workoutDate = new Date(workout.date);
         const diffDays = Math.floor((checkDate - workoutDate) / (1000 * 60 * 60 * 24));
-        
+
         if (diffDays <= 1) {
             streak++;
             checkDate = workoutDate;
@@ -830,7 +838,7 @@ function updateStreak() {
             break;
         }
     }
-    
+
     appState.userData.streak = Math.max(appState.userData.streak, streak);
 }
 
@@ -844,7 +852,7 @@ function initStatsPage() {
         }
         updateStatsPage();
     });
-    
+
     document.getElementById('next-month').addEventListener('click', () => {
         appState.currentMonth++;
         if (appState.currentMonth > 11) {
@@ -853,7 +861,7 @@ function initStatsPage() {
         }
         updateStatsPage();
     });
-    
+
     updateStatsPage();
 }
 
@@ -862,13 +870,13 @@ function updateStatsPage() {
     document.getElementById('stats-total-workouts').textContent = appState.userData.totalWorkouts;
     document.getElementById('stats-total-time').textContent = appState.userData.totalTime;
     document.getElementById('stats-streak').textContent = appState.userData.streak;
-    
+
     // Calendar
     renderCalendar();
-    
+
     // Muscle stats
     renderMuscleStats();
-    
+
     // Activity list
     renderActivityList();
 }
@@ -876,44 +884,44 @@ function updateStatsPage() {
 function renderCalendar() {
     const container = document.getElementById('calendar-grid');
     container.innerHTML = '';
-    
+
     // Update month display
-    document.getElementById('current-month').textContent = 
+    document.getElementById('current-month').textContent =
         `${monthNames[appState.currentMonth]} ${appState.currentYear}`;
-    
+
     // Add day headers
     const dayHeaders = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
     dayHeaders.forEach(day => {
         container.innerHTML += `<div class="calendar-header">${day}</div>`;
     });
-    
+
     // Get first day of month
     const firstDay = new Date(appState.currentYear, appState.currentMonth, 1);
     let startDay = firstDay.getDay() - 1; // Monday = 0
     if (startDay < 0) startDay = 6;
-    
+
     // Get days in month
     const daysInMonth = new Date(appState.currentYear, appState.currentMonth + 1, 0).getDate();
-    
+
     // Today
     const today = new Date();
     const isCurrentMonth = today.getMonth() === appState.currentMonth && today.getFullYear() === appState.currentYear;
-    
+
     // Add empty cells for days before first day
     for (let i = 0; i < startDay; i++) {
         container.innerHTML += '<div class="calendar-day empty"></div>';
     }
-    
+
     // Add days
     for (let day = 1; day <= daysInMonth; day++) {
         const dateStr = `${appState.currentYear}-${String(appState.currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         const hasWorkout = appState.userData.workoutHistory.some(h => h.date === dateStr);
         const isToday = isCurrentMonth && today.getDate() === day;
-        
+
         let classes = 'calendar-day';
         if (isToday) classes += ' today';
         if (hasWorkout) classes += ' workout-done';
-        
+
         container.innerHTML += `<div class="${classes}">${day}</div>`;
     }
 }
@@ -921,10 +929,10 @@ function renderCalendar() {
 function renderMuscleStats() {
     const container = document.getElementById('muscle-stats');
     container.innerHTML = '';
-    
+
     // Count muscle group workouts
     const muscleCount = {};
-    
+
     appState.userData.workoutHistory.forEach(workout => {
         const dayKey = Object.keys(workoutProgram).find(k => workoutProgram[k].name === workout.day);
         if (dayKey && workoutProgram[dayKey].muscles) {
@@ -933,15 +941,15 @@ function renderMuscleStats() {
             });
         }
     });
-    
+
     // Default muscles if no history
     const defaultMuscles = ['Göğüs', 'Sırt', 'Omuz', 'Biceps', 'Triceps', 'Bacak'];
     defaultMuscles.forEach(muscle => {
         if (!muscleCount[muscle]) muscleCount[muscle] = 0;
     });
-    
+
     const maxCount = Math.max(...Object.values(muscleCount), 1);
-    
+
     Object.entries(muscleCount).forEach(([muscle, count]) => {
         const percentage = (count / maxCount) * 100;
         container.innerHTML += `
@@ -959,20 +967,20 @@ function renderMuscleStats() {
 function renderActivityList() {
     const container = document.getElementById('activity-list');
     container.innerHTML = '';
-    
+
     const recentWorkouts = [...appState.userData.workoutHistory]
         .sort((a, b) => b.timestamp - a.timestamp)
         .slice(0, 5);
-    
+
     if (recentWorkouts.length === 0) {
         container.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 24px;">Henüz antrenman geçmişi yok</p>';
         return;
     }
-    
+
     recentWorkouts.forEach(workout => {
         const date = new Date(workout.date);
         const dateStr = `${date.getDate()} ${monthNames[date.getMonth()]}`;
-        
+
         container.innerHTML += `
             <div class="activity-item">
                 <div class="activity-icon">
@@ -994,13 +1002,13 @@ function renderActivityList() {
 function initProfilePage() {
     const nameInput = document.getElementById('profile-name');
     nameInput.value = appState.userData.name;
-    
+
     nameInput.addEventListener('change', () => {
         appState.userData.name = nameInput.value;
         saveUserData();
         updateGreeting();
     });
-    
+
     // Rest duration
     const restSelect = document.getElementById('rest-duration');
     restSelect.value = appState.userData.settings.restDuration;
@@ -1008,30 +1016,30 @@ function initProfilePage() {
         appState.userData.settings.restDuration = parseInt(restSelect.value);
         saveUserData();
     });
-    
+
     // Toggles
     document.getElementById('notifications-toggle').checked = appState.userData.settings.notifications;
     document.getElementById('vibration-toggle').checked = appState.userData.settings.vibration;
     document.getElementById('sound-toggle').checked = appState.userData.settings.sound;
-    
+
     document.getElementById('notifications-toggle').addEventListener('change', (e) => {
         appState.userData.settings.notifications = e.target.checked;
         saveUserData();
     });
-    
+
     document.getElementById('vibration-toggle').addEventListener('change', (e) => {
         appState.userData.settings.vibration = e.target.checked;
         saveUserData();
     });
-    
+
     document.getElementById('sound-toggle').addEventListener('change', (e) => {
         appState.userData.settings.sound = e.target.checked;
         saveUserData();
     });
-    
+
     // Export data
     document.getElementById('export-data-btn').addEventListener('click', exportData);
-    
+
     // Reset data
     document.getElementById('reset-data-btn').addEventListener('click', resetData);
 }
@@ -1040,7 +1048,7 @@ function exportData() {
     const data = JSON.stringify(appState.userData, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    
+
     const a = document.createElement('a');
     a.href = url;
     a.download = `fittrack-data-${new Date().toISOString().split('T')[0]}.json`;
@@ -1061,7 +1069,7 @@ function resetData() {
 function initModals() {
     const overlay = document.getElementById('modal-overlay');
     const closeBtn = document.getElementById('modal-close');
-    
+
     closeBtn.addEventListener('click', closeModal);
     overlay.addEventListener('click', (e) => {
         if (e.target === overlay) closeModal();
