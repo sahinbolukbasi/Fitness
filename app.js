@@ -358,7 +358,415 @@ function initSchedulePage() {
         });
     });
 
+    // Edit schedule button
+    document.getElementById('edit-schedule-btn').addEventListener('click', () => {
+        const activeTab = document.querySelector('.schedule-tab.active');
+        const currentDay = activeTab ? activeTab.dataset.day : 'all';
+        if (currentDay === 'all') {
+            openDaySelectionModal();
+        } else {
+            openEditDayModal(currentDay);
+        }
+    });
+
+    // Load custom program if exists
+    loadCustomProgram();
+
     renderSchedule('all');
+}
+
+// Custom Program Storage
+function loadCustomProgram() {
+    const saved = localStorage.getItem('fittrack-custom-program');
+    if (saved) {
+        try {
+            const customProgram = JSON.parse(saved);
+            // Merge custom program with default
+            Object.keys(customProgram).forEach(dayKey => {
+                if (workoutProgram[dayKey]) {
+                    workoutProgram[dayKey] = { ...workoutProgram[dayKey], ...customProgram[dayKey] };
+                }
+            });
+        } catch (e) {
+            console.error('Error loading custom program:', e);
+        }
+    }
+}
+
+function saveCustomProgram() {
+    localStorage.setItem('fittrack-custom-program', JSON.stringify(workoutProgram));
+}
+
+// Day Selection Modal
+function openDaySelectionModal() {
+    const days = [
+        { key: 'pazartesi', name: 'Pazartesi' },
+        { key: 'sali', name: 'Salı' },
+        { key: 'carsamba', name: 'Çarşamba' },
+        { key: 'persembe', name: 'Perşembe' },
+        { key: 'cuma', name: 'Cuma' },
+        { key: 'cumartesi', name: 'Cumartesi' },
+        { key: 'pazar', name: 'Pazar' }
+    ];
+
+    let content = '<div class="day-selection-list">';
+    days.forEach(day => {
+        const workout = workoutProgram[day.key];
+        const exerciseCount = workout.exercises ? workout.exercises.length : 0;
+        const isRestDay = workout.isRestDay;
+        content += `
+            <button class="day-selection-item" data-day="${day.key}">
+                <div class="day-selection-info">
+                    <span class="day-selection-name">${day.name}</span>
+                    <span class="day-selection-meta">${isRestDay ? 'Dinlenme Günü' : exerciseCount + ' Egzersiz'}</span>
+                </div>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                </svg>
+            </button>
+        `;
+    });
+    content += '</div>';
+
+    openModal('Düzenlenecek Günü Seç', content);
+
+    // Add click handlers
+    document.querySelectorAll('.day-selection-item').forEach(item => {
+        item.addEventListener('click', () => {
+            closeModal();
+            setTimeout(() => openEditDayModal(item.dataset.day), 300);
+        });
+    });
+}
+
+// Edit Day Modal
+function openEditDayModal(dayKey) {
+    const workout = workoutProgram[dayKey];
+
+    let content = `
+        <div class="edit-day-form">
+            <div class="edit-day-header">
+                <h4>${workout.name}</h4>
+                <label class="toggle-rest">
+                    <span>Dinlenme Günü</span>
+                    <label class="toggle">
+                        <input type="checkbox" id="is-rest-day" ${workout.isRestDay ? 'checked' : ''}>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </label>
+            </div>
+            
+            <div id="exercises-editor" class="${workout.isRestDay ? 'hidden' : ''}">
+                <div class="exercises-list" id="edit-exercises-list">
+                    ${renderEditableExercises(workout.exercises || [])}
+                </div>
+                
+                <button class="add-exercise-btn" id="add-exercise-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    <span>Egzersiz Ekle</span>
+                </button>
+            </div>
+            
+            <div class="edit-actions">
+                <button class="secondary-btn" id="cancel-edit-btn">İptal</button>
+                <button class="primary-btn" id="save-edit-btn">Kaydet</button>
+            </div>
+        </div>
+    `;
+
+    openModal('Programı Düzenle', content);
+
+    // Rest day toggle
+    document.getElementById('is-rest-day').addEventListener('change', (e) => {
+        const exercisesEditor = document.getElementById('exercises-editor');
+        if (e.target.checked) {
+            exercisesEditor.classList.add('hidden');
+        } else {
+            exercisesEditor.classList.remove('hidden');
+        }
+    });
+
+    // Add exercise button
+    document.getElementById('add-exercise-btn').addEventListener('click', () => {
+        openAddExerciseModal(dayKey);
+    });
+
+    // Cancel button
+    document.getElementById('cancel-edit-btn').addEventListener('click', closeModal);
+
+    // Save button
+    document.getElementById('save-edit-btn').addEventListener('click', () => {
+        saveEditedDay(dayKey);
+    });
+
+    // Add delete and edit handlers for existing exercises
+    setupExerciseEditors(dayKey);
+}
+
+function renderEditableExercises(exercises) {
+    if (!exercises || exercises.length === 0) {
+        return '<p class="no-exercises-msg">Henüz egzersiz eklenmemiş</p>';
+    }
+
+    return exercises.map((exercise, index) => `
+        <div class="edit-exercise-item" data-index="${index}">
+            <div class="edit-exercise-drag">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="8" y1="6" x2="16" y2="6"/>
+                    <line x1="8" y1="12" x2="16" y2="12"/>
+                    <line x1="8" y1="18" x2="16" y2="18"/>
+                </svg>
+            </div>
+            <div class="edit-exercise-info">
+                <div class="edit-exercise-name">${exercise.name}</div>
+                <div class="edit-exercise-meta">${exercise.target}</div>
+            </div>
+            <div class="edit-exercise-sets">
+                <button class="set-minus" data-index="${index}">-</button>
+                <span class="set-value">${exercise.sets}</span>
+                <button class="set-plus" data-index="${index}">+</button>
+            </div>
+            <div class="edit-exercise-reps">
+                <input type="text" class="reps-input" value="${exercise.reps}" data-index="${index}">
+            </div>
+            <button class="edit-exercise-delete" data-index="${index}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                </svg>
+            </button>
+        </div>
+    `).join('');
+}
+
+function setupExerciseEditors(dayKey) {
+    const workout = workoutProgram[dayKey];
+
+    // Set minus buttons
+    document.querySelectorAll('.set-minus').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const index = parseInt(btn.dataset.index);
+            if (workout.exercises[index].sets > 1) {
+                workout.exercises[index].sets--;
+                btn.nextElementSibling.textContent = workout.exercises[index].sets;
+            }
+        });
+    });
+
+    // Set plus buttons
+    document.querySelectorAll('.set-plus').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const index = parseInt(btn.dataset.index);
+            workout.exercises[index].sets++;
+            btn.previousElementSibling.textContent = workout.exercises[index].sets;
+        });
+    });
+
+    // Reps input
+    document.querySelectorAll('.reps-input').forEach(input => {
+        input.addEventListener('change', () => {
+            const index = parseInt(input.dataset.index);
+            workout.exercises[index].reps = input.value;
+        });
+    });
+
+    // Delete buttons
+    document.querySelectorAll('.edit-exercise-delete').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const index = parseInt(btn.dataset.index);
+            if (confirm('Bu egzersizi silmek istiyor musunuz?')) {
+                workout.exercises.splice(index, 1);
+                document.getElementById('edit-exercises-list').innerHTML =
+                    renderEditableExercises(workout.exercises);
+                setupExerciseEditors(dayKey);
+            }
+        });
+    });
+}
+
+function saveEditedDay(dayKey) {
+    const isRestDay = document.getElementById('is-rest-day').checked;
+
+    workoutProgram[dayKey].isRestDay = isRestDay;
+
+    if (isRestDay) {
+        workoutProgram[dayKey].exercises = [];
+        workoutProgram[dayKey].muscles = [];
+    }
+
+    saveCustomProgram();
+    closeModal();
+    renderSchedule(dayKey);
+
+    // Update the tab to show the edited day
+    document.querySelectorAll('.schedule-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.day === dayKey);
+    });
+}
+
+// Add Exercise Modal
+function openAddExerciseModal(dayKey) {
+    const commonExercises = [
+        { name: "Bench Press", target: "Göğüs", category: "chest" },
+        { name: "Incline Dumbbell Press", target: "Üst Göğüs", category: "chest" },
+        { name: "Cable Fly", target: "İç Göğüs", category: "chest" },
+        { name: "Push Up", target: "Göğüs", category: "chest" },
+        { name: "Lat Pulldown", target: "Sırt", category: "back" },
+        { name: "Barbell Row", target: "Sırt", category: "back" },
+        { name: "Seated Cable Row", target: "Sırt", category: "back" },
+        { name: "Pull Up", target: "Sırt", category: "back" },
+        { name: "Shoulder Press", target: "Omuz", category: "shoulders" },
+        { name: "Lateral Raise", target: "Yan Omuz", category: "shoulders" },
+        { name: "Front Raise", target: "Ön Omuz", category: "shoulders" },
+        { name: "Rear Delt Fly", target: "Arka Omuz", category: "shoulders" },
+        { name: "Bicep Curl", target: "Biceps", category: "arms" },
+        { name: "Hammer Curl", target: "Biceps", category: "arms" },
+        { name: "Tricep Pushdown", target: "Triceps", category: "arms" },
+        { name: "Overhead Tricep Extension", target: "Triceps", category: "arms" },
+        { name: "Squat", target: "Quadriceps", category: "legs" },
+        { name: "Leg Press", target: "Bacak", category: "legs" },
+        { name: "Leg Extension", target: "Ön Bacak", category: "legs" },
+        { name: "Leg Curl", target: "Arka Bacak", category: "legs" },
+        { name: "Calf Raise", target: "Baldır", category: "legs" },
+        { name: "Deadlift", target: "Sırt/Bacak", category: "compound" },
+        { name: "Plank", target: "Core", category: "core" },
+        { name: "Crunch", target: "Karın", category: "core" }
+    ];
+
+    let content = `
+        <div class="add-exercise-form">
+            <div class="exercise-search">
+                <input type="text" id="exercise-search-input" placeholder="Egzersiz ara...">
+            </div>
+            
+            <div class="exercise-categories">
+                <button class="category-btn active" data-category="all">Tümü</button>
+                <button class="category-btn" data-category="chest">Göğüs</button>
+                <button class="category-btn" data-category="back">Sırt</button>
+                <button class="category-btn" data-category="shoulders">Omuz</button>
+                <button class="category-btn" data-category="arms">Kol</button>
+                <button class="category-btn" data-category="legs">Bacak</button>
+                <button class="category-btn" data-category="core">Core</button>
+            </div>
+            
+            <div class="exercise-options" id="exercise-options">
+                ${commonExercises.map(ex => `
+                    <button class="exercise-option" data-name="${ex.name}" data-target="${ex.target}" data-category="${ex.category}">
+                        <span class="exercise-option-name">${ex.name}</span>
+                        <span class="exercise-option-target">${ex.target}</span>
+                    </button>
+                `).join('')}
+            </div>
+            
+            <div class="custom-exercise-form">
+                <h4>Veya Özel Egzersiz Ekle</h4>
+                <input type="text" id="custom-exercise-name" placeholder="Egzersiz Adı">
+                <input type="text" id="custom-exercise-target" placeholder="Hedef Kas (örn: Göğüs)">
+                <div class="custom-exercise-row">
+                    <div class="form-group">
+                        <label>Set</label>
+                        <input type="number" id="custom-exercise-sets" value="3" min="1" max="10">
+                    </div>
+                    <div class="form-group">
+                        <label>Tekrar</label>
+                        <input type="text" id="custom-exercise-reps" value="8-12" placeholder="8-12">
+                    </div>
+                </div>
+                <button class="primary-btn" id="add-custom-exercise-btn">Ekle</button>
+            </div>
+        </div>
+    `;
+
+    openModal('Egzersiz Ekle', content);
+
+    // Search functionality
+    document.getElementById('exercise-search-input').addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase();
+        document.querySelectorAll('.exercise-option').forEach(option => {
+            const name = option.dataset.name.toLowerCase();
+            const target = option.dataset.target.toLowerCase();
+            option.style.display = (name.includes(query) || target.includes(query)) ? 'flex' : 'none';
+        });
+    });
+
+    // Category filter
+    document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const category = btn.dataset.category;
+            document.querySelectorAll('.exercise-option').forEach(option => {
+                if (category === 'all' || option.dataset.category === category) {
+                    option.style.display = 'flex';
+                } else {
+                    option.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    // Exercise option click
+    document.querySelectorAll('.exercise-option').forEach(option => {
+        option.addEventListener('click', () => {
+            addExerciseToDay(dayKey, {
+                name: option.dataset.name,
+                target: option.dataset.target,
+                sets: 3,
+                reps: '8-12',
+                intensity: 'RIR 1',
+                image: 'exercise_1.jpeg' // Default image
+            });
+        });
+    });
+
+    // Custom exercise add
+    document.getElementById('add-custom-exercise-btn').addEventListener('click', () => {
+        const name = document.getElementById('custom-exercise-name').value.trim();
+        const target = document.getElementById('custom-exercise-target').value.trim();
+        const sets = parseInt(document.getElementById('custom-exercise-sets').value) || 3;
+        const reps = document.getElementById('custom-exercise-reps').value || '8-12';
+
+        if (!name) {
+            alert('Lütfen egzersiz adı girin');
+            return;
+        }
+
+        addExerciseToDay(dayKey, {
+            name,
+            target: target || 'Genel',
+            sets,
+            reps,
+            intensity: 'RIR 1',
+            image: 'exercise_1.jpeg'
+        });
+    });
+}
+
+function addExerciseToDay(dayKey, exercise) {
+    if (!workoutProgram[dayKey].exercises) {
+        workoutProgram[dayKey].exercises = [];
+    }
+
+    workoutProgram[dayKey].exercises.push(exercise);
+    workoutProgram[dayKey].isRestDay = false;
+
+    // Update muscles list
+    const target = exercise.target;
+    if (!workoutProgram[dayKey].muscles) {
+        workoutProgram[dayKey].muscles = [];
+    }
+    if (!workoutProgram[dayKey].muscles.includes(target)) {
+        workoutProgram[dayKey].muscles.push(target);
+    }
+
+    saveCustomProgram();
+    closeModal();
+
+    // Reopen edit modal with updated data
+    setTimeout(() => openEditDayModal(dayKey), 300);
 }
 
 function renderSchedule(filter) {
