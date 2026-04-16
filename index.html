@@ -292,89 +292,39 @@
                             </div>
                         </header>
 
-                        <div class="workout-content" id="workout-content">
-                            <!-- Current Exercise -->
-                            <div class="current-exercise-card" id="current-exercise">
-                                <div class="current-exercise-image" id="current-exercise-image">
-                                    <img src="" alt="Egzersiz" id="current-exercise-img">
-                                </div>
-                                <div class="exercise-header-info">
-                                    <div class="exercise-number">
-                                        <span id="current-exercise-num">1</span>
-                                    </div>
-                                    <div class="exercise-details">
-                                        <h2 class="exercise-name" id="exercise-name">Egzersiz Adı</h2>
-                                        <p class="exercise-target" id="exercise-target">Hedef Bölge</p>
-                                    </div>
-                                </div>
-                                <div class="exercise-meta">
-                                    <span class="meta-item">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path
-                                                d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                                            <polyline points="22,6 12,13 2,6" />
-                                        </svg>
-                                        <span id="exercise-sets">2 Set</span>
-                                    </span>
-                                    <span class="meta-item">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-                                            <polyline points="17 6 23 6 23 12" />
-                                        </svg>
-                                        <span id="exercise-reps">6-8 Tekrar</span>
-                                    </span>
-                                    <span class="meta-item intensity">
-                                        <svg viewBox="0 0 24 24" fill="currentColor">
-                                            <path
-                                                d="M12 23c-3.866 0-7-3.134-7-7 0-2.5 1.5-4.5 3-6 .5-.5 1-1 1.5-1.5.5 1.5 2 3 3.5 3.5 1-.5 2-1.5 2.5-2.5.5 1 1 2 1 3-.5 1.5-1.5 3-2.5 4 1.5.5 3 .5 4 0 0 3.866-3.134 7-7 7z" />
-                                        </svg>
-                                        <span id="exercise-intensity">RIR 1</span>
-                                    </span>
-                                </div>
+                        <div class="workout-content" id="workout-content" style="position:relative;">
+                            <!-- Unified Exercise List -->
+                            <div class="workout-unified-list" id="workout-unified-list">
+                                <!-- Egzersizler buraya eklenecek -->
                             </div>
 
-                            <!-- Set Tracker -->
-                            <div class="set-tracker">
-                                <h3>Set Takibi</h3>
-                                <div class="sets-container" id="sets-container">
-                                    <!-- Sets will be inserted here -->
-                                </div>
-                            </div>
-
-                            <!-- Rest Timer -->
-                            <div class="rest-timer hidden" id="rest-timer">
-                                <div class="rest-content">
-                                    <div class="rest-circle">
+                            <!-- Rest Timer Overlay (Hidden by Default) -->
+                            <div class="rest-timer-overlay hidden" id="rest-timer" style="position:sticky;bottom:20px;left:0;right:0;background:var(--bg-glass);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius-lg);padding:16px;margin-top:20px;z-index:100;box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+                                <div class="rest-content" style="display:flex;align-items:center;gap:16px;">
+                                    <div class="rest-circle" style="width:60px;height:60px;flex-shrink:0;">
                                         <svg viewBox="0 0 100 100">
-                                            <circle class="rest-bg" cx="50" cy="50" r="45" />
-                                            <circle class="rest-progress" id="rest-progress" cx="50" cy="50" r="45" />
+                                            <circle class="rest-bg" cx="50" cy="50" r="45" stroke-width="8" stroke="rgba(255,255,255,0.1)" fill="none" />
+                                            <circle class="rest-progress" id="rest-progress" cx="50" cy="50" r="45" stroke-width="8" stroke="var(--accent-primary)" stroke-linecap="round" fill="none" transform="rotate(-90 50 50)" />
                                         </svg>
-                                        <span class="rest-time" id="rest-time">60</span>
+                                        <span class="rest-time" id="rest-time" style="font-size:16px;">60</span>
                                     </div>
-                                    <p>Dinlenme Süresi</p>
-                                    <div class="rest-actions">
-                                        <button class="rest-btn" id="skip-rest">Atla</button>
-                                        <button class="rest-btn" id="add-time">+30s</button>
+                                    <div style="flex:1;">
+                                        <h4 style="margin:0 0 4px 0;font-size:14px;">Dinlenme</h4>
+                                        <div class="rest-actions" style="display:flex;gap:8px;">
+                                            <button class="secondary-btn" id="skip-rest" style="padding:6px 12px;font-size:12px;flex:1;">Atla</button>
+                                            <button class="secondary-btn" id="add-time" style="padding:6px 12px;font-size:12px;flex:1;">+30s</button>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-
-                            <!-- Upcoming Exercises -->
-                            <div class="upcoming-exercises">
-                                <h3>Sıradaki Egzersizler</h3>
-                                <div class="upcoming-list" id="upcoming-exercises">
-                                    <!-- Upcoming exercises will be inserted here -->
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Complete Set Button -->
-                        <div class="workout-actions">
-                            <button class="complete-set-btn" id="complete-set-btn">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                                    <polyline points="20 6 9 17 4 12" />
+                        <div class="workout-footer">
+                            <button class="primary-btn" id="finish-workout-btn" style="background:var(--danger);width:100%;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;margin-right:8px;">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
                                 </svg>
-                                <span>Seti Tamamla</span>
+                                <span>Antrenmanı Bitir</span>
                             </button>
                         </div>
                     </div>

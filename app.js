@@ -3,89 +3,75 @@
 // GitHub Pages Compatible - No Backend Required
 // ============================================
 
-// Workout Data from PDF
-const workoutProgram = {
-    pazartesi: {
-        name: "Pazartesi",
-        displayName: "Göğüs, Omuz & Triceps",
+// Workout Templates (Esnek Şablonlar)
+const defaultWorkoutTemplates = [
+    {
+        id: 'chest-shoulder-tri',
+        name: 'Göğüs, Omuz & Triceps',
         muscles: ["Göğüs", "Omuz", "Triceps"],
         exercises: [
-            { name: "Plate Loaded Chest Press", target: "Genel Göğüs", sets: 2, reps: "5-6", intensity: "RIR 1", image: "exercise_1.jpeg" },
-            { name: "Smith Machine Low Incline Press", target: "Üst Göğüs", sets: 2, reps: "5-6", intensity: "RIR 1", image: "exercise_2.jpeg" },
-            { name: "Chest Fly Machine", target: "İç Göğüs", sets: 1, reps: "6-8", intensity: "Failure", image: "exercise_3.jpeg" },
-            { name: "Shoulder Press Machine", target: "Ön Omuz", sets: 2, reps: "5-6", intensity: "RIR 1", image: "exercise_4.jpeg" },
-            { name: "Lateral Raise", target: "Yan Omuz", sets: 3, reps: "8-10", intensity: "Failure", image: "exercise_5.jpeg" },
-            { name: "Triceps Pushdown", target: "Arka Kol (Dış)", sets: 2, reps: "6-8", intensity: "Failure", image: "exercise_6.png" },
-            { name: "Overhead Rope Extension", target: "Arka Kol (Uzun)", sets: 2, reps: "8-10", intensity: "Failure", image: "exercise_7.jpeg" }
+            { id: "e1", name: "Plate Loaded Chest Press", target: "Genel Göğüs", sets: 2, reps: "5-6", intensity: "RIR 1", image: "exercise_1.jpeg" },
+            { id: "e2", name: "Smith Machine Low Incline Press", target: "Üst Göğüs", sets: 2, reps: "5-6", intensity: "RIR 1", image: "exercise_2.jpeg" },
+            { id: "e3", name: "Chest Fly Machine", target: "İç Göğüs", sets: 1, reps: "6-8", intensity: "Failure", image: "exercise_3.jpeg" },
+            { id: "e4", name: "Shoulder Press Machine", target: "Ön Omuz", sets: 2, reps: "5-6", intensity: "RIR 1", image: "exercise_4.jpeg" },
+            { id: "e5", name: "Lateral Raise", target: "Yan Omuz", sets: 3, reps: "8-10", intensity: "Failure", image: "exercise_5.jpeg" },
+            { id: "e6", name: "Triceps Pushdown", target: "Arka Kol (Dış)", sets: 2, reps: "6-8", intensity: "Failure", image: "exercise_6.png" },
+            { id: "e7", name: "Overhead Rope Extension", target: "Arka Kol (Uzun)", sets: 2, reps: "8-10", intensity: "Failure", image: "exercise_7.jpeg" }
         ]
     },
-    sali: {
-        name: "Salı",
-        displayName: "Sırt & Biceps",
+    {
+        id: 'back-biceps',
+        name: 'Sırt & Biceps',
         muscles: ["Sırt", "Biceps", "Ön Kol"],
         exercises: [
-            { name: "Lat Pulldown", target: "Sırt (Genişlik)", sets: 2, reps: "6-8", intensity: "RIR 1-Failure", image: "exercise_8.png" },
-            { name: "Plate Loaded Wide Grip Row", target: "Sırt (Üst/Kalınlık)", sets: 3, reps: "6-8", intensity: "RIR 1-Failure", image: "exercise_9.jpeg" },
-            { name: "Cable Row", target: "Sırt (Orta)", sets: 1, reps: "8-10", intensity: "Failure", image: "exercise_10.jpeg" },
-            { name: "Dumbbell Curl", target: "Pazu (Biceps)", sets: 2, reps: "6-8", intensity: "Failure", image: "exercise_11.png" },
-            { name: "Cable Curl", target: "Pazu (Biceps)", sets: 2, reps: "6-8", intensity: "Failure", image: "exercise_12.jpeg" },
-            { name: "Hammer Curl + Reverse Barbell Curl (SS)", target: "Ön Kol / Brachialis", sets: 2, reps: "8-10", intensity: "Failure", image: "exercise_13.jpeg" }
+            { id: "e8", name: "Lat Pulldown", target: "Sırt (Genişlik)", sets: 2, reps: "6-8", intensity: "RIR 1-Failure", image: "exercise_8.png" },
+            { id: "e9", name: "Plate Loaded Wide Grip Row", target: "Sırt (Üst/Kalınlık)", sets: 3, reps: "6-8", intensity: "RIR 1-Failure", image: "exercise_9.jpeg" },
+            { id: "e10", name: "Cable Row", target: "Sırt (Orta)", sets: 1, reps: "8-10", intensity: "Failure", image: "exercise_10.jpeg" },
+            { id: "e11", name: "Dumbbell Curl", target: "Pazu (Biceps)", sets: 2, reps: "6-8", intensity: "Failure", image: "exercise_11.png" },
+            { id: "e12", name: "Cable Curl", target: "Pazu (Biceps)", sets: 2, reps: "6-8", intensity: "Failure", image: "exercise_12.jpeg" },
+            { id: "e13", name: "Hammer Curl + Reverse Barbell Curl (SS)", target: "Ön Kol / Brachialis", sets: 2, reps: "8-10", intensity: "Failure", image: "exercise_13.jpeg" }
         ]
     },
-    carsamba: {
-        name: "Çarşamba",
-        displayName: "Bacak",
+    {
+        id: 'legs',
+        name: 'Bacak',
         muscles: ["Quadriceps", "Hamstring", "Kalça"],
         exercises: [
-            { name: "Leg Press", target: "Ön Bacak / Kalça", sets: 2, reps: "6-8", intensity: "RIR 1", image: "exercise_14.png" },
-            { name: "Smith Machine Squat", target: "Tüm Bacak", sets: 2, reps: "6-8", intensity: "RIR 1", image: "exercise_15.png" },
-            { name: "Leg Extension", target: "Ön Bacak (İzole)", sets: 2, reps: "8-10", intensity: "Failure", image: "exercise_16.png" },
-            { name: "Seated Leg Curl", target: "Arka Bacak", sets: 3, reps: "8-10", intensity: "RIR 1", image: "exercise_17.png" }
+            { id: "e14", name: "Leg Press", target: "Ön Bacak / Kalça", sets: 2, reps: "6-8", intensity: "RIR 1", image: "exercise_14.png" },
+            { id: "e15", name: "Smith Machine Squat", target: "Tüm Bacak", sets: 2, reps: "6-8", intensity: "RIR 1", image: "exercise_15.png" },
+            { id: "e16", name: "Leg Extension", target: "Ön Bacak (İzole)", sets: 2, reps: "8-10", intensity: "Failure", image: "exercise_16.png" },
+            { id: "e17", name: "Seated Leg Curl", target: "Arka Bacak", sets: 3, reps: "8-10", intensity: "RIR 1", image: "exercise_17.png" }
         ]
     },
-    persembe: {
-        name: "Perşembe",
-        displayName: "Dinlenme Günü",
-        muscles: [],
-        exercises: [],
-        isRestDay: true
-    },
-    cuma: {
-        name: "Cuma",
-        displayName: "Omuz, Göğüs & Triceps",
+    {
+        id: 'shoulder-chest-tri',
+        name: 'Omuz, Göğüs & Triceps',
         muscles: ["Omuz", "Göğüs", "Triceps"],
         exercises: [
-            { name: "Shoulder Press Machine", target: "Ön Omuz", sets: 2, reps: "5-6", intensity: "RIR 1", image: "exercise_18.jpeg" },
-            { name: "Lateral Raise", target: "Yan Omuz", sets: 3, reps: "8-10", intensity: "Failure", image: "exercise_19.jpeg" },
-            { name: "Smith Machine Low Incline Press", target: "Üst Göğüs", sets: 2, reps: "5-6", intensity: "RIR 1", image: "exercise_20.jpeg" },
-            { name: "Chest Fly Machine", target: "İç Göğüs", sets: 2, reps: "6-8", intensity: "Failure", image: "exercise_21.jpeg" },
-            { name: "Cable Rear Delt Fly", target: "Arka Omuz", sets: 2, reps: "8-10", intensity: "Failure", image: "exercise_22.png" },
-            { name: "Triceps Pushdown", target: "Arka Kol", sets: 2, reps: "6-8", intensity: "Failure", image: "exercise_23.png" },
-            { name: "Overhead Rope Extension", target: "Arka Kol", sets: 2, reps: "8-10", intensity: "Failure", image: "exercise_24.jpeg" }
+            { id: "e18", name: "Shoulder Press Machine", target: "Ön Omuz", sets: 2, reps: "5-6", intensity: "RIR 1", image: "exercise_18.jpeg" },
+            { id: "e19", name: "Lateral Raise", target: "Yan Omuz", sets: 3, reps: "8-10", intensity: "Failure", image: "exercise_19.jpeg" },
+            { id: "e20", name: "Smith Machine Low Incline Press", target: "Üst Göğüs", sets: 2, reps: "5-6", intensity: "RIR 1", image: "exercise_20.jpeg" },
+            { id: "e21", name: "Chest Fly Machine", target: "İç Göğüs", sets: 2, reps: "6-8", intensity: "Failure", image: "exercise_21.jpeg" },
+            { id: "e22", name: "Cable Rear Delt Fly", target: "Arka Omuz", sets: 2, reps: "8-10", intensity: "Failure", image: "exercise_22.png" },
+            { id: "e23", name: "Triceps Pushdown", target: "Arka Kol", sets: 2, reps: "6-8", intensity: "Failure", image: "exercise_23.png" },
+            { id: "e24", name: "Overhead Rope Extension", target: "Arka Kol", sets: 2, reps: "8-10", intensity: "Failure", image: "exercise_24.jpeg" }
         ]
     },
-    cumartesi: {
-        name: "Cumartesi",
-        displayName: "Sırt, Biceps & Bacak",
+    {
+        id: 'back-biceps-legs',
+        name: 'Sırt, Biceps & Bacak',
         muscles: ["Sırt", "Biceps", "Bacak"],
         exercises: [
-            { name: "Plate Loaded Wide Grip Row", target: "Sırt (Üst)", sets: 3, reps: "6-8", intensity: "RIR 1-Failure", image: "exercise_25.jpeg" },
-            { name: "Close Grip Lat Pulldown", target: "Sırt (Alt Kanat)", sets: 3, reps: "6-8", intensity: "RIR 1-Failure", image: "exercise_26.png" },
-            { name: "Cable Curl", target: "Pazu", sets: 2, reps: "6-8", intensity: "Failure", image: "exercise_27.jpeg" },
-            { name: "Hammer Curl + Reverse Barbell Curl (SS)", target: "Ön Kol", sets: 2, reps: "8-10", intensity: "Failure", image: "exercise_28.jpeg" },
-            { name: "Leg Press", target: "Ön Bacak", sets: 2, reps: "6-8", intensity: "RIR 1", image: "exercise_29.png" },
-            { name: "Leg Extension", target: "Ön Bacak", sets: 2, reps: "6-8", intensity: "Failure", image: "exercise_30.png" },
-            { name: "Seated Leg Curl", target: "Arka Bacak", sets: 1, reps: "8-10", intensity: "Failure", image: "exercise_31.png" }
+            { id: "e25", name: "Plate Loaded Wide Grip Row", target: "Sırt (Üst)", sets: 3, reps: "6-8", intensity: "RIR 1-Failure", image: "exercise_25.jpeg" },
+            { id: "e26", name: "Close Grip Lat Pulldown", target: "Sırt (Alt Kanat)", sets: 3, reps: "6-8", intensity: "RIR 1-Failure", image: "exercise_26.png" },
+            { id: "e27", name: "Cable Curl", target: "Pazu", sets: 2, reps: "6-8", intensity: "Failure", image: "exercise_27.jpeg" },
+            { id: "e28", name: "Hammer Curl + Reverse Barbell Curl (SS)", target: "Ön Kol", sets: 2, reps: "8-10", intensity: "Failure", image: "exercise_28.jpeg" },
+            { id: "e29", name: "Leg Press", target: "Ön Bacak", sets: 2, reps: "6-8", intensity: "RIR 1", image: "exercise_29.png" },
+            { id: "e30", name: "Leg Extension", target: "Ön Bacak", sets: 2, reps: "6-8", intensity: "Failure", image: "exercise_30.png" },
+            { id: "e31", name: "Seated Leg Curl", target: "Arka Bacak", sets: 1, reps: "8-10", intensity: "Failure", image: "exercise_31.png" }
         ]
-    },
-    pazar: {
-        name: "Pazar",
-        displayName: "Dinlenme Günü",
-        muscles: [],
-        exercises: [],
-        isRestDay: true
     }
-};
+];
 
 // Day mapping
 const dayMapping = {
@@ -105,20 +91,32 @@ const monthNames = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Tem
 let appState = {
     currentPage: 'home',
     activeWorkout: null,
-    currentExerciseIndex: 0,
-    currentSetIndex: 0,
     workoutStartTime: null,
     workoutTimer: null,
     restTimer: null,
     restDuration: 60,
     isPaused: false,
-    completedSets: [],
     userData: {
+        version: 2, // Yeni veri modeli versiyonu
         name: 'Sporcu',
         streak: 0,
         totalWorkouts: 0,
         totalTime: 0,
         workoutHistory: [],
+        workoutTemplates: [...defaultWorkoutTemplates],
+        weeklySchedule: {
+            // Başlangıçta eski programa benzer bir atama yapıyoruz
+            pazartesi: ['chest-shoulder-tri'],
+            sali: ['back-biceps'],
+            carsamba: ['legs'],
+            persembe: [], // Dinlenme
+            cuma: ['shoulder-chest-tri'],
+            cumartesi: ['back-biceps-legs'],
+            pazar: [] // Dinlenme
+        },
+        exerciseWeights: {}, // Kilo takibi
+        personalRecords: {}, // PR takibi
+        exerciseNotes: {}, // Egzersiz notları
         settings: {
             restDuration: 60,
             notifications: true,
@@ -142,6 +140,28 @@ document.addEventListener('DOMContentLoaded', () => {
     initProfilePage();
     initModals();
 });
+
+// Helper for Templates
+function getDayTemplates(dayKey) {
+    const templateIds = appState.userData.weeklySchedule[dayKey] || [];
+    return templateIds.map(id => appState.userData.workoutTemplates.find(t => t.id === id)).filter(Boolean);
+}
+
+function getDayExercises(dayKey) {
+    const templates = getDayTemplates(dayKey);
+    let allExercises = [];
+    templates.forEach(t => {
+        allExercises = allExercises.concat(t.exercises);
+    });
+    return allExercises;
+}
+
+function getDayMuscles(dayKey) {
+    const templates = getDayTemplates(dayKey);
+    const muscles = new Set();
+    templates.forEach(t => t.muscles.forEach(m => muscles.add(m)));
+    return Array.from(muscles);
+}
 
 // Splash Screen
 function initSplashScreen() {
@@ -209,21 +229,26 @@ function updateGreeting() {
 function updateTodayCard() {
     const today = new Date();
     const dayKey = dayMapping[today.getDay()];
-    const todayWorkout = workoutProgram[dayKey];
+    const templates = getDayTemplates(dayKey);
+    const exercises = getDayExercises(dayKey);
+    const muscles = getDayMuscles(dayKey);
+    const isRestDay = templates.length === 0;
 
-    document.getElementById('today-workout-name').textContent = todayWorkout.displayName;
-    document.getElementById('exercise-count').textContent = todayWorkout.exercises.length;
+    const displayName = isRestDay ? "Dinlenme Günü" : templates.map(t => t.name).join(" + ");
+
+    document.getElementById('today-workout-name').textContent = displayName;
+    document.getElementById('exercise-count').textContent = exercises.length;
 
     const musclesContainer = document.getElementById('today-muscles');
     musclesContainer.innerHTML = '';
 
-    if (todayWorkout.isRestDay) {
+    if (isRestDay) {
         musclesContainer.innerHTML = '<span class="muscle-tag">🌟 Dinlenme Günü</span>';
-        document.getElementById('start-today-workout').textContent = 'Dinlenme Günü';
+        document.getElementById('start-today-workout').innerHTML = '<span>Dinlenme Günü</span>';
         document.getElementById('start-today-workout').disabled = true;
         document.getElementById('start-today-workout').style.opacity = '0.5';
     } else {
-        todayWorkout.muscles.forEach(muscle => {
+        muscles.forEach(muscle => {
             musclesContainer.innerHTML += `<span class="muscle-tag">${muscle}</span>`;
         });
         document.getElementById('start-today-workout').innerHTML = `
@@ -239,15 +264,15 @@ function updateTodayCard() {
 
     // Today badge
     const todayBadge = document.getElementById('today-badge');
-    if (todayWorkout.isRestDay) {
+    if (isRestDay) {
         todayBadge.innerHTML = '😴 Dinlen';
     } else {
-        todayBadge.innerHTML = `<span id="exercise-count">${todayWorkout.exercises.length}</span> Egzersiz`;
+        todayBadge.innerHTML = `<span id="exercise-count">${exercises.length}</span> Egzersiz`;
     }
 
     // Start workout button
     document.getElementById('start-today-workout').onclick = () => {
-        if (!todayWorkout.isRestDay) {
+        if (!isRestDay) {
             startWorkout(dayKey);
         }
     };
@@ -269,14 +294,18 @@ function updateWeekProgress() {
         date.setDate(startOfWeek.getDate() + i);
         const dayNum = date.getDate();
         const isToday = date.toDateString() === today.toDateString();
-        const workout = workoutProgram[dayKeys[i]];
+        
+        const dayKey = dayKeys[i];
+        const templates = getDayTemplates(dayKey);
+        const isRestDay = templates.length === 0;
+
         const dateStr = date.toISOString().split('T')[0];
         const isCompleted = appState.userData.workoutHistory.some(h => h.date === dateStr);
 
         let classes = 'week-day';
         if (isToday) classes += ' today';
         if (isCompleted) classes += ' completed';
-        if (workout.isRestDay) classes += ' rest';
+        if (isRestDay) classes += ' rest';
 
         container.innerHTML += `
             <div class="${classes}">
@@ -309,9 +338,12 @@ function updateUpcomingWorkouts() {
         const date = new Date(today);
         date.setDate(today.getDate() + i);
         const dayKey = dayMapping[date.getDay()];
-        const workout = workoutProgram[dayKey];
+        const templates = getDayTemplates(dayKey);
+        const exercises = getDayExercises(dayKey);
+        const muscles = getDayMuscles(dayKey);
 
-        if (!workout.isRestDay) {
+        if (templates.length > 0) {
+            const displayName = templates.map(t => t.name).join(" + ");
             container.innerHTML += `
                 <div class="upcoming-item" data-day="${dayKey}">
                     <div class="upcoming-day">
@@ -319,8 +351,8 @@ function updateUpcomingWorkouts() {
                         <span class="upcoming-day-num">${date.getDate()}</span>
                     </div>
                     <div class="upcoming-info">
-                        <div class="upcoming-title">${workout.displayName}</div>
-                        <div class="upcoming-meta">${workout.exercises.length} egzersiz • ${workout.muscles.join(', ')}</div>
+                        <div class="upcoming-title">${displayName}</div>
+                        <div class="upcoming-meta">${exercises.length} egzersiz • ${muscles.join(', ')}</div>
                     </div>
                     <div class="upcoming-arrow">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -362,436 +394,109 @@ function initSchedulePage() {
     document.getElementById('edit-schedule-btn').addEventListener('click', () => {
         const activeTab = document.querySelector('.schedule-tab.active');
         const currentDay = activeTab ? activeTab.dataset.day : 'all';
-        if (currentDay === 'all') {
-            openDaySelectionModal();
-        } else {
-            openEditDayModal(currentDay);
-        }
+        openAssignTemplateModal(currentDay === 'all' ? 'pazartesi' : currentDay);
     });
-
-    // Load custom program if exists
-    loadCustomProgram();
 
     renderSchedule('all');
 }
 
-// Custom Program Storage
-function loadCustomProgram() {
-    const saved = localStorage.getItem('fittrack-custom-program');
-    if (saved) {
-        try {
-            const customProgram = JSON.parse(saved);
-            // Merge custom program with default
-            Object.keys(customProgram).forEach(dayKey => {
-                if (workoutProgram[dayKey]) {
-                    workoutProgram[dayKey] = { ...workoutProgram[dayKey], ...customProgram[dayKey] };
-                }
-            });
-        } catch (e) {
-            console.error('Error loading custom program:', e);
-        }
-    }
-}
-
-function saveCustomProgram() {
-    localStorage.setItem('fittrack-custom-program', JSON.stringify(workoutProgram));
-}
-
-// Day Selection Modal
-function openDaySelectionModal() {
+function openAssignTemplateModal(defaultDay) {
     const days = [
-        { key: 'pazartesi', name: 'Pazartesi' },
-        { key: 'sali', name: 'Salı' },
-        { key: 'carsamba', name: 'Çarşamba' },
-        { key: 'persembe', name: 'Perşembe' },
-        { key: 'cuma', name: 'Cuma' },
-        { key: 'cumartesi', name: 'Cumartesi' },
-        { key: 'pazar', name: 'Pazar' }
+        { key: 'pazartesi', name: 'Pazartesi' }, { key: 'sali', name: 'Salı' },
+        { key: 'carsamba', name: 'Çarşamba' }, { key: 'persembe', name: 'Perşembe' },
+        { key: 'cuma', name: 'Cuma' }, { key: 'cumartesi', name: 'Cumartesi' }, { key: 'pazar', name: 'Pazar' }
     ];
-
-    let content = '<div class="day-selection-list">';
-    days.forEach(day => {
-        const workout = workoutProgram[day.key];
-        const exerciseCount = workout.exercises ? workout.exercises.length : 0;
-        const isRestDay = workout.isRestDay;
-        content += `
-            <button class="day-selection-item" data-day="${day.key}">
-                <div class="day-selection-info">
-                    <span class="day-selection-name">${day.name}</span>
-                    <span class="day-selection-meta">${isRestDay ? 'Dinlenme Günü' : exerciseCount + ' Egzersiz'}</span>
-                </div>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="9 18 15 12 9 6"/>
-                </svg>
-            </button>
-        `;
-    });
-    content += '</div>';
-
-    openModal('Düzenlenecek Günü Seç', content);
-
-    // Add click handlers
-    document.querySelectorAll('.day-selection-item').forEach(item => {
-        item.addEventListener('click', () => {
-            closeModal();
-            setTimeout(() => openEditDayModal(item.dataset.day), 300);
-        });
-    });
-}
-
-// Edit Day Modal
-function openEditDayModal(dayKey) {
-    const workout = workoutProgram[dayKey];
+    
+    const templates = appState.userData.workoutTemplates;
 
     let content = `
         <div class="edit-day-form">
-            <div class="edit-day-header">
-                <h4>${workout.name}</h4>
-                <label class="toggle-rest">
-                    <span>Dinlenme Günü</span>
-                    <label class="toggle">
-                        <input type="checkbox" id="is-rest-day" ${workout.isRestDay ? 'checked' : ''}>
-                        <span class="toggle-slider"></span>
-                    </label>
-                </label>
+            <div class="form-group">
+                <label>Atanacak Gün</label>
+                <select id="assign-day-select" class="setting-select" style="width: 100%; margin-bottom: 16px;">
+                    ${days.map(d => `<option value="${d.key}" ${d.key === defaultDay ? 'selected' : ''}>${d.name}</option>`).join('')}
+                </select>
             </div>
-            
-            <div id="exercises-editor" class="${workout.isRestDay ? 'hidden' : ''}">
-                <div class="exercises-list" id="edit-exercises-list">
-                    ${renderEditableExercises(workout.exercises || [])}
+            <div class="form-group">
+                <label>Şablonlar (Birden fazla seçilebilir)</label>
+                <div class="template-selection-list">
+                    ${templates.map(t => `
+                        <label class="template-checkbox-item">
+                            <input type="checkbox" class="template-checkbox" value="${t.id}">
+                            <div class="template-checkbox-content">
+                                <strong>${t.name}</strong>
+                                <span>${t.exercises.length} Egzersiz</span>
+                            </div>
+                        </label>
+                    `).join('')}
                 </div>
-                
-                <button class="add-exercise-btn" id="add-exercise-btn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="12" y1="5" x2="12" y2="19"/>
-                        <line x1="5" y1="12" x2="19" y2="12"/>
-                    </svg>
-                    <span>Egzersiz Ekle</span>
-                </button>
             </div>
-            
             <div class="edit-actions">
-                <button class="secondary-btn" id="cancel-edit-btn">İptal</button>
-                <button class="primary-btn" id="save-edit-btn">Kaydet</button>
+                <button class="secondary-btn" id="cancel-assign-btn">İptal</button>
+                <button class="primary-btn" id="save-assign-btn">Kaydet</button>
             </div>
         </div>
     `;
 
-    openModal('Programı Düzenle', content);
+    openModal('Antrenman Ata', content);
 
-    // Rest day toggle
-    document.getElementById('is-rest-day').addEventListener('change', (e) => {
-        const exercisesEditor = document.getElementById('exercises-editor');
-        if (e.target.checked) {
-            exercisesEditor.classList.add('hidden');
-        } else {
-            exercisesEditor.classList.remove('hidden');
-        }
-    });
-
-    // Add exercise button
-    document.getElementById('add-exercise-btn').addEventListener('click', () => {
-        openAddExerciseModal(dayKey);
-    });
-
-    // Cancel button
-    document.getElementById('cancel-edit-btn').addEventListener('click', closeModal);
-
-    // Save button
-    document.getElementById('save-edit-btn').addEventListener('click', () => {
-        saveEditedDay(dayKey);
-    });
-
-    // Add delete and edit handlers for existing exercises
-    setupExerciseEditors(dayKey);
-}
-
-function renderEditableExercises(exercises) {
-    if (!exercises || exercises.length === 0) {
-        return '<p class="no-exercises-msg">Henüz egzersiz eklenmemiş</p>';
-    }
-
-    return exercises.map((exercise, index) => `
-        <div class="edit-exercise-item" data-index="${index}">
-            <div class="edit-exercise-drag">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="8" y1="6" x2="16" y2="6"/>
-                    <line x1="8" y1="12" x2="16" y2="12"/>
-                    <line x1="8" y1="18" x2="16" y2="18"/>
-                </svg>
-            </div>
-            <div class="edit-exercise-info">
-                <div class="edit-exercise-name">${exercise.name}</div>
-                <div class="edit-exercise-meta">${exercise.target}</div>
-            </div>
-            <div class="edit-exercise-sets">
-                <button class="set-minus" data-index="${index}">-</button>
-                <span class="set-value">${exercise.sets}</span>
-                <button class="set-plus" data-index="${index}">+</button>
-            </div>
-            <div class="edit-exercise-reps">
-                <input type="text" class="reps-input" value="${exercise.reps}" data-index="${index}">
-            </div>
-            <button class="edit-exercise-delete" data-index="${index}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="3 6 5 6 21 6"/>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                </svg>
-            </button>
-        </div>
-    `).join('');
-}
-
-function setupExerciseEditors(dayKey) {
-    const workout = workoutProgram[dayKey];
-
-    // Set minus buttons
-    document.querySelectorAll('.set-minus').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const index = parseInt(btn.dataset.index);
-            if (workout.exercises[index].sets > 1) {
-                workout.exercises[index].sets--;
-                btn.nextElementSibling.textContent = workout.exercises[index].sets;
-            }
+    const daySelect = document.getElementById('assign-day-select');
+    const updateCheckboxes = () => {
+        const selectedDay = daySelect.value;
+        const assignedIds = appState.userData.weeklySchedule[selectedDay] || [];
+        document.querySelectorAll('.template-checkbox').forEach(cb => {
+            cb.checked = assignedIds.includes(cb.value);
         });
-    });
+    };
+    
+    // Initial update
+    updateCheckboxes();
+    daySelect.addEventListener('change', updateCheckboxes);
 
-    // Set plus buttons
-    document.querySelectorAll('.set-plus').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const index = parseInt(btn.dataset.index);
-            workout.exercises[index].sets++;
-            btn.previousElementSibling.textContent = workout.exercises[index].sets;
-        });
-    });
-
-    // Reps input
-    document.querySelectorAll('.reps-input').forEach(input => {
-        input.addEventListener('change', () => {
-            const index = parseInt(input.dataset.index);
-            workout.exercises[index].reps = input.value;
-        });
-    });
-
-    // Delete buttons
-    document.querySelectorAll('.edit-exercise-delete').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const index = parseInt(btn.dataset.index);
-            if (confirm('Bu egzersizi silmek istiyor musunuz?')) {
-                workout.exercises.splice(index, 1);
-                document.getElementById('edit-exercises-list').innerHTML =
-                    renderEditableExercises(workout.exercises);
-                setupExerciseEditors(dayKey);
-            }
-        });
+    document.getElementById('cancel-assign-btn').addEventListener('click', closeModal);
+    document.getElementById('save-assign-btn').addEventListener('click', () => {
+        const selectedDay = daySelect.value;
+        const selectedIds = Array.from(document.querySelectorAll('.template-checkbox:checked')).map(cb => cb.value);
+        appState.userData.weeklySchedule[selectedDay] = selectedIds;
+        saveUserData();
+        closeModal();
+        renderSchedule(document.querySelector('.schedule-tab.active').dataset.day);
+        updateHomePageIfNeeded();
     });
 }
 
-function saveEditedDay(dayKey) {
-    const isRestDay = document.getElementById('is-rest-day').checked;
-
-    workoutProgram[dayKey].isRestDay = isRestDay;
-
-    if (isRestDay) {
-        workoutProgram[dayKey].exercises = [];
-        workoutProgram[dayKey].muscles = [];
-    }
-
-    saveCustomProgram();
-    closeModal();
-    renderSchedule(dayKey);
-
-    // Update the tab to show the edited day
-    document.querySelectorAll('.schedule-tab').forEach(tab => {
-        tab.classList.toggle('active', tab.dataset.day === dayKey);
-    });
+function updateHomePageIfNeeded() {
+    if (appState.currentPage === 'home') initHomePage();
 }
 
-// Add Exercise Modal
-function openAddExerciseModal(dayKey) {
-    const commonExercises = [
-        { name: "Bench Press", target: "Göğüs", category: "chest" },
-        { name: "Incline Dumbbell Press", target: "Üst Göğüs", category: "chest" },
-        { name: "Cable Fly", target: "İç Göğüs", category: "chest" },
-        { name: "Push Up", target: "Göğüs", category: "chest" },
-        { name: "Lat Pulldown", target: "Sırt", category: "back" },
-        { name: "Barbell Row", target: "Sırt", category: "back" },
-        { name: "Seated Cable Row", target: "Sırt", category: "back" },
-        { name: "Pull Up", target: "Sırt", category: "back" },
-        { name: "Shoulder Press", target: "Omuz", category: "shoulders" },
-        { name: "Lateral Raise", target: "Yan Omuz", category: "shoulders" },
-        { name: "Front Raise", target: "Ön Omuz", category: "shoulders" },
-        { name: "Rear Delt Fly", target: "Arka Omuz", category: "shoulders" },
-        { name: "Bicep Curl", target: "Biceps", category: "arms" },
-        { name: "Hammer Curl", target: "Biceps", category: "arms" },
-        { name: "Tricep Pushdown", target: "Triceps", category: "arms" },
-        { name: "Overhead Tricep Extension", target: "Triceps", category: "arms" },
-        { name: "Squat", target: "Quadriceps", category: "legs" },
-        { name: "Leg Press", target: "Bacak", category: "legs" },
-        { name: "Leg Extension", target: "Ön Bacak", category: "legs" },
-        { name: "Leg Curl", target: "Arka Bacak", category: "legs" },
-        { name: "Calf Raise", target: "Baldır", category: "legs" },
-        { name: "Deadlift", target: "Sırt/Bacak", category: "compound" },
-        { name: "Plank", target: "Core", category: "core" },
-        { name: "Crunch", target: "Karın", category: "core" }
-    ];
 
-    let content = `
-        <div class="add-exercise-form">
-            <div class="exercise-search">
-                <input type="text" id="exercise-search-input" placeholder="Egzersiz ara...">
-            </div>
-            
-            <div class="exercise-categories">
-                <button class="category-btn active" data-category="all">Tümü</button>
-                <button class="category-btn" data-category="chest">Göğüs</button>
-                <button class="category-btn" data-category="back">Sırt</button>
-                <button class="category-btn" data-category="shoulders">Omuz</button>
-                <button class="category-btn" data-category="arms">Kol</button>
-                <button class="category-btn" data-category="legs">Bacak</button>
-                <button class="category-btn" data-category="core">Core</button>
-            </div>
-            
-            <div class="exercise-options" id="exercise-options">
-                ${commonExercises.map(ex => `
-                    <button class="exercise-option" data-name="${ex.name}" data-target="${ex.target}" data-category="${ex.category}">
-                        <span class="exercise-option-name">${ex.name}</span>
-                        <span class="exercise-option-target">${ex.target}</span>
-                    </button>
-                `).join('')}
-            </div>
-            
-            <div class="custom-exercise-form">
-                <h4>Veya Özel Egzersiz Ekle</h4>
-                <input type="text" id="custom-exercise-name" placeholder="Egzersiz Adı">
-                <input type="text" id="custom-exercise-target" placeholder="Hedef Kas (örn: Göğüs)">
-                <div class="custom-exercise-row">
-                    <div class="form-group">
-                        <label>Set</label>
-                        <input type="number" id="custom-exercise-sets" value="3" min="1" max="10">
-                    </div>
-                    <div class="form-group">
-                        <label>Tekrar</label>
-                        <input type="text" id="custom-exercise-reps" value="8-12" placeholder="8-12">
-                    </div>
-                </div>
-                <button class="primary-btn" id="add-custom-exercise-btn">Ekle</button>
-            </div>
-        </div>
-    `;
-
-    openModal('Egzersiz Ekle', content);
-
-    // Search functionality
-    document.getElementById('exercise-search-input').addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase();
-        document.querySelectorAll('.exercise-option').forEach(option => {
-            const name = option.dataset.name.toLowerCase();
-            const target = option.dataset.target.toLowerCase();
-            option.style.display = (name.includes(query) || target.includes(query)) ? 'flex' : 'none';
-        });
-    });
-
-    // Category filter
-    document.querySelectorAll('.category-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            const category = btn.dataset.category;
-            document.querySelectorAll('.exercise-option').forEach(option => {
-                if (category === 'all' || option.dataset.category === category) {
-                    option.style.display = 'flex';
-                } else {
-                    option.style.display = 'none';
-                }
-            });
-        });
-    });
-
-    // Exercise option click
-    document.querySelectorAll('.exercise-option').forEach(option => {
-        option.addEventListener('click', () => {
-            addExerciseToDay(dayKey, {
-                name: option.dataset.name,
-                target: option.dataset.target,
-                sets: 3,
-                reps: '8-12',
-                intensity: 'RIR 1',
-                image: 'exercise_1.jpeg' // Default image
-            });
-        });
-    });
-
-    // Custom exercise add
-    document.getElementById('add-custom-exercise-btn').addEventListener('click', () => {
-        const name = document.getElementById('custom-exercise-name').value.trim();
-        const target = document.getElementById('custom-exercise-target').value.trim();
-        const sets = parseInt(document.getElementById('custom-exercise-sets').value) || 3;
-        const reps = document.getElementById('custom-exercise-reps').value || '8-12';
-
-        if (!name) {
-            alert('Lütfen egzersiz adı girin');
-            return;
-        }
-
-        addExerciseToDay(dayKey, {
-            name,
-            target: target || 'Genel',
-            sets,
-            reps,
-            intensity: 'RIR 1',
-            image: 'exercise_1.jpeg'
-        });
-    });
-}
-
-function addExerciseToDay(dayKey, exercise) {
-    if (!workoutProgram[dayKey].exercises) {
-        workoutProgram[dayKey].exercises = [];
-    }
-
-    workoutProgram[dayKey].exercises.push(exercise);
-    workoutProgram[dayKey].isRestDay = false;
-
-    // Update muscles list
-    const target = exercise.target;
-    if (!workoutProgram[dayKey].muscles) {
-        workoutProgram[dayKey].muscles = [];
-    }
-    if (!workoutProgram[dayKey].muscles.includes(target)) {
-        workoutProgram[dayKey].muscles.push(target);
-    }
-
-    saveCustomProgram();
-    closeModal();
-
-    // Reopen edit modal with updated data
-    setTimeout(() => openEditDayModal(dayKey), 300);
-}
 
 function renderSchedule(filter) {
     const container = document.getElementById('schedule-list');
     container.innerHTML = '';
 
     const days = filter === 'all'
-        ? Object.keys(workoutProgram)
+        ? Object.keys(appState.userData.weeklySchedule)
         : [filter];
 
     days.forEach(dayKey => {
-        const workout = workoutProgram[dayKey];
+        const templates = getDayTemplates(dayKey);
+        const isRestDay = templates.length === 0;
+        const exercises = getDayExercises(dayKey);
+        const dayName = dayNames[Object.keys(dayMapping).find(k => dayMapping[k] === dayKey)];
 
         let dayHtml = `
             <div class="schedule-day" data-day="${dayKey}">
                 <div class="schedule-day-header">
                     <div class="schedule-day-title">
-                        <span>${workout.name}</span>
-                        ${workout.isRestDay ? '<span class="schedule-day-badge">Dinlenme</span>' : ''}
+                        <span>${dayName}</span>
+                        ${isRestDay ? '<span class="schedule-day-badge">Dinlenme</span>' : ''}
                     </div>
-                    ${!workout.isRestDay ? `<span class="schedule-day-badge">${workout.exercises.length} Egzersiz</span>` : ''}
+                    ${!isRestDay ? `<span class="schedule-day-badge">${exercises.length} Egzersiz</span>` : ''}
                 </div>
         `;
 
-        if (workout.isRestDay) {
+        if (isRestDay) {
             dayHtml += `
                 <div class="rest-day-indicator">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -801,8 +506,15 @@ function renderSchedule(filter) {
                 </div>
             `;
         } else {
+            // Render assigned template chips
+            dayHtml += `<div class="assigned-templates-list" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">`;
+            templates.forEach(t => {
+                dayHtml += `<span class="template-chip" style="background:var(--accent-gradient);font-size:12px;padding:4px 8px;border-radius:12px;color:white;">${t.name}</span>`;
+            });
+            dayHtml += `</div>`;
+
             dayHtml += '<div class="schedule-exercises">';
-            workout.exercises.forEach((exercise, index) => {
+            exercises.forEach((exercise, index) => {
                 dayHtml += `
                     <div class="exercise-item" data-exercise="${index}">
                         <div class="exercise-image">
@@ -828,8 +540,8 @@ function renderSchedule(filter) {
 
     // Add start workout button for each day
     days.forEach(dayKey => {
-        const workout = workoutProgram[dayKey];
-        if (!workout.isRestDay) {
+        const isRestDay = getDayTemplates(dayKey).length === 0;
+        if (!isRestDay) {
             const dayElement = container.querySelector(`.schedule-day[data-day="${dayKey}"]`);
             if (dayElement) {
                 const startBtn = document.createElement('button');
@@ -853,7 +565,7 @@ function initWorkoutPage() {
     document.getElementById('start-workout-btn').addEventListener('click', () => {
         const today = new Date();
         const dayKey = dayMapping[today.getDay()];
-        if (!workoutProgram[dayKey].isRestDay) {
+        if (getDayTemplates(dayKey).length > 0) {
             startWorkout(dayKey);
         } else {
             alert('Bugün dinlenme günü! Başka bir gün seçin.');
@@ -862,54 +574,45 @@ function initWorkoutPage() {
 
     document.getElementById('cancel-workout-btn').addEventListener('click', cancelWorkout);
     document.getElementById('pause-workout-btn').addEventListener('click', togglePause);
-    document.getElementById('complete-set-btn').addEventListener('click', completeSet);
     document.getElementById('finish-workout-btn').addEventListener('click', finishWorkout);
     document.getElementById('skip-rest').addEventListener('click', skipRest);
     document.getElementById('add-time').addEventListener('click', addRestTime);
 }
 
 function startWorkout(dayKey) {
-    const workout = workoutProgram[dayKey];
-    if (!workout || workout.isRestDay) return;
+    const templates = getDayTemplates(dayKey);
+    const exercises = getDayExercises(dayKey);
+    if (templates.length === 0) return;
 
     appState.activeWorkout = {
         dayKey,
-        workout,
+        templates,
+        exercises,
         startTime: Date.now(),
-        completedExercises: 0,
-        totalSets: workout.exercises.reduce((sum, ex) => sum + ex.sets, 0)
+        totalSets: exercises.reduce((sum, ex) => sum + ex.sets, 0)
     };
-    appState.currentExerciseIndex = 0;
-    appState.currentSetIndex = 0;
-    appState.completedSets = workout.exercises.map(ex => Array(ex.sets).fill(false));
+    appState.completedSets = exercises.map(ex => Array(ex.sets).fill(false));
+    appState.exerciseWeights = exercises.map(ex => Array(ex.sets).fill(appState.userData.exerciseWeights[ex.id] || ""));
     appState.isPaused = false;
 
-    // Navigate to workout page
     navigateTo('workout');
 
-    // Show active workout UI
     document.getElementById('no-workout').classList.add('hidden');
     document.getElementById('active-workout').classList.remove('hidden');
     document.getElementById('workout-complete').classList.add('hidden');
 
-    // Update header
-    document.getElementById('workout-day-title').textContent = workout.displayName;
-    document.getElementById('exercises-total').textContent = workout.exercises.length;
+    const displayName = templates.map(t => t.name).join(" + ");
+    document.getElementById('workout-day-title').textContent = displayName;
+    document.getElementById('exercises-total').textContent = exercises.length;
 
-    // Start timer
     startWorkoutTimer();
-
-    // Render current exercise
-    renderCurrentExercise();
-    renderUpcomingExercises();
+    renderWorkoutList();
     updateWorkoutProgress();
 }
 
 function startWorkoutTimer() {
     appState.workoutStartTime = Date.now();
-
     if (appState.workoutTimer) clearInterval(appState.workoutTimer);
-
     appState.workoutTimer = setInterval(() => {
         if (!appState.isPaused) {
             const elapsed = Date.now() - appState.workoutStartTime;
@@ -925,144 +628,121 @@ function formatTime(ms) {
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
-function renderCurrentExercise() {
-    const exercise = appState.activeWorkout.workout.exercises[appState.currentExerciseIndex];
-
-    // Update exercise image
-    const exerciseImg = document.getElementById('current-exercise-img');
-    exerciseImg.src = `images/${exercise.image}`;
-    exerciseImg.alt = exercise.name;
-    exerciseImg.onerror = function () {
-        this.style.display = 'none';
-    };
-
-    document.getElementById('current-exercise-num').textContent = appState.currentExerciseIndex + 1;
-    document.getElementById('exercise-name').textContent = exercise.name;
-    document.getElementById('exercise-target').textContent = exercise.target;
-    document.getElementById('exercise-sets').textContent = `${exercise.sets} Set`;
-    document.getElementById('exercise-reps').textContent = `${exercise.reps} Tekrar`;
-    document.getElementById('exercise-intensity').textContent = exercise.intensity;
-
-    // Render sets
-    const setsContainer = document.getElementById('sets-container');
-    setsContainer.innerHTML = '';
-
-    for (let i = 0; i < exercise.sets; i++) {
-        const isCompleted = appState.completedSets[appState.currentExerciseIndex][i];
-        const isActive = i === appState.currentSetIndex && !isCompleted;
-
-        const setBtn = document.createElement('button');
-        setBtn.className = 'set-btn';
-        if (isActive) setBtn.classList.add('active');
-        if (isCompleted) setBtn.classList.add('completed');
-
-        setBtn.innerHTML = isCompleted
-            ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>`
-            : `<span>Set</span><span>${i + 1}</span>`;
-
-        setBtn.onclick = () => {
-            if (!isCompleted) {
-                appState.currentSetIndex = i;
-                renderCurrentExercise();
-            }
-        };
-
-        setsContainer.appendChild(setBtn);
-    }
-
-    // Update complete button text
-    const completeBtn = document.getElementById('complete-set-btn');
-    const allSetsCompleted = appState.completedSets[appState.currentExerciseIndex].every(s => s);
-
-    if (allSetsCompleted) {
-        const isLastExercise = appState.currentExerciseIndex === appState.activeWorkout.workout.exercises.length - 1;
-        completeBtn.innerHTML = isLastExercise
-            ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg><span>Antrenmanı Bitir</span>`
-            : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg><span>Sonraki Egzersiz</span>`;
-    } else {
-        completeBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg><span>Seti Tamamla</span>`;
-    }
-}
-
-function renderUpcomingExercises() {
-    const container = document.getElementById('upcoming-exercises');
+function renderWorkoutList() {
+    const container = document.getElementById('workout-unified-list');
     container.innerHTML = '';
 
-    const exercises = appState.activeWorkout.workout.exercises;
-    const startIdx = appState.currentExerciseIndex + 1;
+    appState.activeWorkout.exercises.forEach((exercise, exerciseIndex) => {
+        // Check if all sets for this exercise are completed
+        const isCompleted = appState.completedSets[exerciseIndex].every(s => s);
+        
+        let html = `
+            <div class="exercise-list-item ${isCompleted ? 'completed' : ''}" data-index="${exerciseIndex}" style="background:var(--bg-glass);border:1px solid rgba(255,255,255,0.05);border-radius:var(--radius-md);margin-bottom:16px;padding:16px;transition:all 0.3s ease;${isCompleted ? 'opacity:0.5;' : ''}">
+                <div class="exercise-header" style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+                    <div class="exercise-number" style="width:28px;height:28px;border-radius:50%;background:var(--bg-tertiary);display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:12px;color:var(--text-secondary);">${exerciseIndex + 1}</div>
+                    <div style="flex:1;">
+                        <h4 style="margin:0;font-size:16px;${isCompleted ? 'text-decoration:line-through;' : ''}">${exercise.name}</h4>
+                        <div style="font-size:12px;color:var(--text-muted);">${exercise.target} • ${exercise.sets} Set × ${exercise.reps} • ${exercise.intensity}</div>
+                    </div>
+                </div>
+                
+                <div class="exercise-sets-container">
+        `;
 
-    for (let i = startIdx; i < Math.min(startIdx + 3, exercises.length); i++) {
-        const exercise = exercises[i];
-        container.innerHTML += `
-            <div class="upcoming-exercise-item">
-                <div class="upcoming-exercise-num">${i + 1}</div>
-                <div class="upcoming-exercise-info">
-                    <div class="upcoming-exercise-name">${exercise.name}</div>
-                    <div class="upcoming-exercise-meta">${exercise.sets} set × ${exercise.reps} tekrar</div>
+        for (let setIndex = 0; setIndex < exercise.sets; setIndex++) {
+            const setCompleted = appState.completedSets[exerciseIndex][setIndex];
+            const weightVal = appState.exerciseWeights[exerciseIndex][setIndex] || "";
+            const lastWeight = appState.userData.exerciseWeights[exercise.id] || "";
+            
+            html += `
+                <div class="set-row" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:8px;background:var(--bg-tertiary);border-radius:var(--radius-sm);">
+                    <div style="width:40px;font-size:12px;color:var(--text-secondary);">Set ${setIndex + 1}</div>
+                    
+                    <!-- Kilo Input -->
+                    <div style="flex:1;display:flex;align-items:center;background:var(--bg-secondary);border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,0.05);padding:4px 8px;">
+                        <input type="number" 
+                               class="weight-input" 
+                               placeholder="${lastWeight ? 'Son: ' + lastWeight : 'Kilo'}" 
+                               value="${weightVal}" 
+                               data-ex-idx="${exerciseIndex}" 
+                               data-set-idx="${setIndex}"
+                               style="background:transparent;border:none;color:var(--text-primary);width:100%;outline:none;font-size:14px;text-align:right;">
+                        <span style="font-size:12px;color:var(--text-muted);margin-left:4px;">kg</span>
+                    </div>
+
+                    <!-- Checkbox -->
+                    <button class="set-check-btn ${setCompleted ? 'checked' : ''}" 
+                            data-ex-idx="${exerciseIndex}" 
+                            data-set-idx="${setIndex}"
+                            style="width:32px;height:32px;border-radius:var(--radius-sm);border:2px solid ${setCompleted ? 'var(--accent-primary)' : 'rgba(255,255,255,0.2)'};background:${setCompleted ? 'var(--accent-primary)' : 'transparent'};color:${setCompleted ? 'white' : 'transparent'};display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s ease;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:16px;height:16px;">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </button>
+                </div>
+            `;
+        }
+
+        html += `
                 </div>
             </div>
         `;
-    }
+        container.innerHTML += html;
+    });
 
-    if (container.innerHTML === '') {
-        container.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 16px;">Bu son egzersiz!</p>';
-    }
+    // Event Listeners for Weights
+    document.querySelectorAll('.weight-input').forEach(input => {
+        input.addEventListener('change', (e) => {
+            const exIdx = parseInt(e.target.dataset.exIdx);
+            const setIdx = parseInt(e.target.dataset.setIdx);
+            const val = e.target.value;
+            appState.exerciseWeights[exIdx][setIdx] = val;
+            
+            // update global exercise weight tracking
+            const exerciseId = appState.activeWorkout.exercises[exIdx].id;
+            if (val) {
+                appState.userData.exerciseWeights[exerciseId] = val;
+                saveUserData();
+            }
+        });
+    });
+
+    // Event Listeners for Checkboxes
+    document.querySelectorAll('.set-check-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const exIdx = parseInt(e.currentTarget.dataset.exIdx);
+            const setIdx = parseInt(e.currentTarget.dataset.setIdx);
+            const currentState = appState.completedSets[exIdx][setIdx];
+            
+            appState.completedSets[exIdx][setIdx] = !currentState;
+            
+            if (!currentState) {
+                // If checking, trigger rest timer
+                startRestTimer();
+            }
+            
+            // Re-render to show updated states and strikethroughs
+            renderWorkoutList();
+            updateWorkoutProgress();
+        });
+    });
 }
 
 function updateWorkoutProgress() {
-    const totalSets = appState.completedSets.flat().length;
+    const totalSets = appState.activeWorkout.totalSets;
     const completedSets = appState.completedSets.flat().filter(s => s).length;
-    const progress = (completedSets / totalSets) * 100;
+    const progress = totalSets === 0 ? 0 : (completedSets / totalSets) * 100;
 
-    document.getElementById('workout-progress-fill').style.width = `${progress}%`;
+    const progressFill = document.getElementById('workout-progress-fill');
+    if(progressFill) progressFill.style.width = `${progress}%`;
 
-    // Count completed exercises
-    const completedExercises = appState.completedSets.filter(sets => sets.every(s => s)).length;
-    document.getElementById('exercises-done').textContent = completedExercises;
-}
-
-function completeSet() {
-    const currentExercise = appState.activeWorkout.workout.exercises[appState.currentExerciseIndex];
-    const currentSets = appState.completedSets[appState.currentExerciseIndex];
-    const allSetsCompleted = currentSets.every(s => s);
-
-    if (allSetsCompleted) {
-        // Move to next exercise or finish
-        const isLastExercise = appState.currentExerciseIndex === appState.activeWorkout.workout.exercises.length - 1;
-
-        if (isLastExercise) {
-            completeWorkout();
-        } else {
-            appState.currentExerciseIndex++;
-            appState.currentSetIndex = 0;
-            renderCurrentExercise();
-            renderUpcomingExercises();
-            updateWorkoutProgress();
-        }
-    } else {
-        // Complete current set
-        appState.completedSets[appState.currentExerciseIndex][appState.currentSetIndex] = true;
-
-        // Vibrate if enabled
-        if (appState.userData.settings.vibration && navigator.vibrate) {
-            navigator.vibrate(100);
-        }
-
-        // Check if more sets remain
-        const nextSetIndex = currentSets.findIndex((s, i) => i > appState.currentSetIndex && !s);
-
-        if (nextSetIndex !== -1) {
-            // Show rest timer
-            showRestTimer();
-            appState.currentSetIndex = nextSetIndex;
-        }
-
-        renderCurrentExercise();
-        updateWorkoutProgress();
+    const exercisesDoneSpan = document.getElementById('exercises-done');
+    if(exercisesDoneSpan) {
+        const completedExercises = appState.completedSets.filter(sets => sets.every(s => s)).length;
     }
 }
 
-function showRestTimer() {
+function startRestTimer() {
     const restTimer = document.getElementById('rest-timer');
     restTimer.classList.remove('hidden');
 
@@ -1084,6 +764,8 @@ function showRestTimer() {
         `;
         svg.insertBefore(defs, svg.firstChild);
     }
+
+    if (appState.restTimer) clearInterval(appState.restTimer);
 
     appState.restTimer = setInterval(() => {
         remaining--;
@@ -1156,7 +838,7 @@ function completeWorkout() {
     const totalSets = appState.completedSets.flat().filter(s => s).length;
 
     document.getElementById('complete-time').textContent = formatTime(elapsed);
-    document.getElementById('complete-exercises').textContent = appState.activeWorkout.workout.exercises.length;
+    document.getElementById('complete-exercises').textContent = appState.activeWorkout.exercises.length;
     document.getElementById('complete-sets').textContent = totalSets;
 
     document.getElementById('active-workout').classList.add('hidden');
@@ -1165,10 +847,10 @@ function completeWorkout() {
     // Save workout to history
     const workoutData = {
         date: new Date().toISOString().split('T')[0],
-        day: appState.activeWorkout.workout.name,
-        displayName: appState.activeWorkout.workout.displayName,
+        day: dayNames[Object.keys(dayMapping).find(k => dayMapping[k] === appState.activeWorkout.dayKey)],
+        displayName: appState.activeWorkout.templates.map(t => t.name).join(" + "),
         duration: Math.floor(elapsed / 60000), // minutes
-        exercises: appState.activeWorkout.workout.exercises.length,
+        exercises: appState.activeWorkout.exercises.length,
         sets: totalSets,
         timestamp: Date.now()
     };
@@ -1177,12 +859,34 @@ function completeWorkout() {
     appState.userData.totalWorkouts++;
     appState.userData.totalTime += workoutData.duration;
 
-    // Update streak
-    updateStreak();
+    // Calculate PRs (1RM using Brzycki formula)
+    appState.activeWorkout.exercises.forEach((exercise, exerciseIndex) => {
+        appState.completedSets[exerciseIndex].forEach((completed, setIndex) => {
+            if (completed) {
+                const weightStr = appState.exerciseWeights[exerciseIndex][setIndex];
+                const weight = parseFloat(weightStr);
+                
+                if (!isNaN(weight) && weight > 0) {
+                    const repsText = exercise.reps.toString();
+                    // parse first number from reps, e.g. "8-12" -> 8
+                    const reps = parseInt(repsText.match(/\\d+/)?.[0] || "10", 10);
+                    
+                    // Brzycki formula
+                    const expected1RM = weight * (36 / (37 - reps));
+                    const rounded1RM = Math.round(expected1RM);
+                    
+                    const currentPR = appState.userData.personalRecords[exercise.id] || 0;
+                    if (rounded1RM > currentPR) {
+                        appState.userData.personalRecords[exercise.id] = rounded1RM;
+                    }
+                }
+            }
+        });
+    });
 
+    updateStreak();
     saveUserData();
 
-    // Stop timer
     if (appState.workoutTimer) {
         clearInterval(appState.workoutTimer);
         appState.workoutTimer = null;
@@ -1190,8 +894,14 @@ function completeWorkout() {
 }
 
 function finishWorkout() {
-    endWorkout(true);
-    navigateTo('home');
+    // If not completed from a "Finish" button click from history view, complete it
+    const active = document.getElementById('active-workout');
+    if (!active.classList.contains('hidden')) {
+        completeWorkout();
+    } else {
+        endWorkout(true);
+        navigateTo('home');
+    }
 }
 
 function endWorkout(completed) {
@@ -1206,9 +916,8 @@ function endWorkout(completed) {
     }
 
     appState.activeWorkout = null;
-    appState.currentExerciseIndex = 0;
-    appState.currentSetIndex = 0;
     appState.completedSets = [];
+    appState.exerciseWeights = [];
 
     document.getElementById('no-workout').classList.remove('hidden');
     document.getElementById('active-workout').classList.add('hidden');
@@ -1504,7 +1213,27 @@ function loadUserData() {
     if (saved) {
         try {
             const parsed = JSON.parse(saved);
-            appState.userData = { ...appState.userData, ...parsed };
+            
+            // Migration to v2
+            if (!parsed.version || parsed.version < 2) {
+                console.log("Migrating user data to v2...");
+                appState.userData = {
+                    ...appState.userData,
+                    ...parsed,
+                    version: 2,
+                    weeklySchedule: appState.userData.weeklySchedule, // Keep default mapping
+                    workoutTemplates: [...defaultWorkoutTemplates],
+                    exerciseWeights: {},
+                    personalRecords: {},
+                    exerciseNotes: {}
+                };
+            } else {
+                appState.userData = { ...appState.userData, ...parsed };
+                // Ensure default templates if empty
+                if (!appState.userData.workoutTemplates || appState.userData.workoutTemplates.length === 0) {
+                    appState.userData.workoutTemplates = [...defaultWorkoutTemplates];
+                }
+            }
         } catch (e) {
             console.error('Error loading user data:', e);
         }
@@ -1514,8 +1243,6 @@ function loadUserData() {
 // Service Worker Registration for PWA (optional for GitHub Pages)
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js').catch(() => {
-            // Service worker registration failed - not critical for GitHub Pages
-        });
+        navigator.serviceWorker.register('sw.js').catch(() => {});
     });
 }
