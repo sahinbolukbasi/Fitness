@@ -591,12 +591,12 @@ function startWorkout(dayKey) {
         templates,
         exercises,
         startTime: Date.now(),
-        totalSets: exercises.reduce((sum, ex) => sum + ex.sets, 0)
+        totalSets: exercises.reduce((sum, ex) => sum + (parseInt(ex.sets) || 1), 0)
     };
     appState.currentExerciseIndex = 0;
     appState.currentSetIndex = 0;
-    appState.completedSets = exercises.map(ex => Array(ex.sets).fill(false));
-    appState.exerciseWeights = exercises.map(ex => Array(ex.sets).fill(appState.userData.exerciseWeights[ex.id] || ""));
+    appState.completedSets = exercises.map(ex => Array(parseInt(ex.sets) || 1).fill(false));
+    appState.exerciseWeights = exercises.map(ex => Array(parseInt(ex.sets) || 1).fill(appState.userData.exerciseWeights[ex.id] || ""));
     appState.isPaused = false;
 
     navigateTo('workout');
@@ -637,6 +637,7 @@ function renderCurrentExercise() {
     const exercise = appState.activeWorkout.exercises[appState.currentExerciseIndex];
 
     const exerciseImg = document.getElementById('current-exercise-img');
+    exerciseImg.style.display = 'block';
     exerciseImg.src = `images/${exercise.image}`;
     exerciseImg.alt = exercise.name;
     exerciseImg.onerror = function () {
@@ -653,7 +654,8 @@ function renderCurrentExercise() {
     const setsContainer = document.getElementById('sets-container');
     setsContainer.innerHTML = '';
 
-    for (let i = 0; i < exercise.sets; i++) {
+    const numSets = parseInt(exercise.sets) || 1;
+    for (let i = 0; i < numSets; i++) {
         const isCompleted = appState.completedSets[appState.currentExerciseIndex][i];
         const isActive = i === appState.currentSetIndex && !isCompleted;
         const weightVal = appState.exerciseWeights[appState.currentExerciseIndex][i] || "";
@@ -926,7 +928,7 @@ function completeWorkout() {
     // Save workout to history
     const workoutData = {
         date: new Date().toISOString().split('T')[0],
-        day: dayNames[Object.keys(dayMapping).find(k => dayMapping[k] === appState.activeWorkout.dayKey)],
+        day: dayNames[appState.activeWorkout.dayKey] || "Antrenman",
         displayName: appState.activeWorkout.templates.map(t => t.name).join(" + "),
         duration: Math.floor(elapsed / 60000), // minutes
         exercises: appState.activeWorkout.exercises.length,
