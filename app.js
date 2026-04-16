@@ -574,7 +574,9 @@ function initWorkoutPage() {
 
     document.getElementById('cancel-workout-btn').addEventListener('click', cancelWorkout);
     document.getElementById('pause-workout-btn').addEventListener('click', togglePause);
+    document.getElementById('complete-set-btn').addEventListener('click', completeSet);
     document.getElementById('finish-workout-btn').addEventListener('click', finishWorkout);
+    document.getElementById('finish-early-btn').addEventListener('click', finishWorkout);
     document.getElementById('skip-rest').addEventListener('click', skipRest);
     document.getElementById('add-time').addEventListener('click', addRestTime);
 }
@@ -591,6 +593,8 @@ function startWorkout(dayKey) {
         startTime: Date.now(),
         totalSets: exercises.reduce((sum, ex) => sum + ex.sets, 0)
     };
+    appState.currentExerciseIndex = 0;
+    appState.currentSetIndex = 0;
     appState.completedSets = exercises.map(ex => Array(ex.sets).fill(false));
     appState.exerciseWeights = exercises.map(ex => Array(ex.sets).fill(appState.userData.exerciseWeights[ex.id] || ""));
     appState.isPaused = false;
@@ -606,7 +610,8 @@ function startWorkout(dayKey) {
     document.getElementById('exercises-total').textContent = exercises.length;
 
     startWorkoutTimer();
-    renderWorkoutList();
+    renderCurrentExercise();
+    renderUpcomingExercises();
     updateWorkoutProgress();
 }
 
@@ -628,104 +633,137 @@ function formatTime(ms) {
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
-function renderWorkoutList() {
-    const container = document.getElementById('workout-unified-list');
+function renderCurrentExercise() {
+    const exercise = appState.activeWorkout.exercises[appState.currentExerciseIndex];
+
+    const exerciseImg = document.getElementById('current-exercise-img');
+    exerciseImg.src = `images/${exercise.image}`;
+    exerciseImg.alt = exercise.name;
+    exerciseImg.onerror = function () {
+        this.style.display = 'none';
+    };
+
+    document.getElementById('current-exercise-num').textContent = appState.currentExerciseIndex + 1;
+    document.getElementById('exercise-name').textContent = exercise.name;
+    document.getElementById('exercise-target').textContent = exercise.target;
+    document.getElementById('exercise-sets').textContent = `${exercise.sets} Set`;
+    document.getElementById('exercise-reps').textContent = `${exercise.reps} Tekrar`;
+    document.getElementById('exercise-intensity').textContent = exercise.intensity;
+
+    const setsContainer = document.getElementById('sets-container');
+    setsContainer.innerHTML = '';
+
+    for (let i = 0; i < exercise.sets; i++) {
+        const isCompleted = appState.completedSets[appState.currentExerciseIndex][i];
+        const isActive = i === appState.currentSetIndex && !isCompleted;
+        const weightVal = appState.exerciseWeights[appState.currentExerciseIndex][i] || "";
+        const lastWeight = appState.userData.exerciseWeights[exercise.id] || "";
+
+        const row = document.createElement('div');
+        row.style.display = 'flex';
+        row.style.alignItems = 'stretch';
+        row.style.gap = '8px';
+        
+        // The old Set Button styled part
+        const setBtn = document.createElement('button');
+        setBtn.className = 'set-btn';
+        setBtn.style.flex = '1';
+        if (isActive) setBtn.classList.add('active');
+        if (isCompleted) setBtn.classList.add('completed');
+
+        setBtn.innerHTML = isCompleted
+            ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>`
+            : `<span>Set</span><span>${i + 1}</span>`;
+
+        setBtn.onclick = () => {
+            if (!isCompleted) {
+                appState.currentSetIndex = i;
+                renderCurrentExercise();
+            }
+        };
+
+        // Weight Input Box
+        const weightBox = document.createElement('div');
+        weightBox.style.display = 'flex';
+        weightBox.style.alignItems = 'center';
+        weightBox.style.background = 'var(--bg-secondary)';
+        weightBox.style.border = '1px solid rgba(255,255,255,0.05)';
+        weightBox.style.borderRadius = 'var(--radius-sm)';
+        weightBox.style.padding = '0 12px';
+        weightBox.style.width = '100px';
+
+        const weightInput = document.createElement('input');
+        weightInput.type = 'number';
+        weightInput.placeholder = lastWeight ? `Son:${lastWeight}` : 'kg';
+        weightInput.value = weightVal;
+        weightInput.style.background = 'transparent';
+        weightInput.style.border = 'none';
+        weightInput.style.color = 'var(--text-primary)';
+        weightInput.style.width = '100%';
+        weightInput.style.outline = 'none';
+        weightInput.style.fontSize = '14px';
+        weightInput.style.textAlign = 'center';
+        
+        // Update state and PR tracking
+        weightInput.onchange = (e) => {
+            const val = e.target.value;
+            appState.exerciseWeights[appState.currentExerciseIndex][i] = val;
+            if (val) {
+                appState.userData.exerciseWeights[exercise.id] = val;
+                saveUserData();
+            }
+        };
+
+        const kgLabel = document.createElement('span');
+        kgLabel.textContent = 'kg';
+        kgLabel.style.fontSize = '12px';
+        kgLabel.style.color = 'var(--text-muted)';
+        kgLabel.style.marginLeft = '4px';
+
+        weightBox.appendChild(weightInput);
+        weightBox.appendChild(kgLabel);
+
+        row.appendChild(setBtn);
+        row.appendChild(weightBox);
+        setsContainer.appendChild(row);
+    }
+
+    const completeBtn = document.getElementById('complete-set-btn');
+    const allSetsCompleted = appState.completedSets[appState.currentExerciseIndex].every(s => s);
+
+    if (allSetsCompleted) {
+        const isLastExercise = appState.currentExerciseIndex === appState.activeWorkout.exercises.length - 1;
+        completeBtn.innerHTML = isLastExercise
+            ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg><span>Antrenmanı Bitir</span>`
+            : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg><span>Sonraki Egzersiz</span>`;
+    } else {
+        completeBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg><span>Seti Tamamla</span>`;
+    }
+}
+
+function renderUpcomingExercises() {
+    const container = document.getElementById('upcoming-exercises');
     container.innerHTML = '';
 
-    appState.activeWorkout.exercises.forEach((exercise, exerciseIndex) => {
-        // Check if all sets for this exercise are completed
-        const isCompleted = appState.completedSets[exerciseIndex].every(s => s);
-        
-        let html = `
-            <div class="exercise-list-item ${isCompleted ? 'completed' : ''}" data-index="${exerciseIndex}" style="background:var(--bg-glass);border:1px solid rgba(255,255,255,0.05);border-radius:var(--radius-md);margin-bottom:16px;padding:16px;transition:all 0.3s ease;${isCompleted ? 'opacity:0.5;' : ''}">
-                <div class="exercise-header" style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-                    <div class="exercise-number" style="width:28px;height:28px;border-radius:50%;background:var(--bg-tertiary);display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:12px;color:var(--text-secondary);">${exerciseIndex + 1}</div>
-                    <div style="flex:1;">
-                        <h4 style="margin:0;font-size:16px;${isCompleted ? 'text-decoration:line-through;' : ''}">${exercise.name}</h4>
-                        <div style="font-size:12px;color:var(--text-muted);">${exercise.target} • ${exercise.sets} Set × ${exercise.reps} • ${exercise.intensity}</div>
-                    </div>
-                </div>
-                
-                <div class="exercise-sets-container">
-        `;
+    const exercises = appState.activeWorkout.exercises;
+    const startIdx = appState.currentExerciseIndex + 1;
 
-        for (let setIndex = 0; setIndex < exercise.sets; setIndex++) {
-            const setCompleted = appState.completedSets[exerciseIndex][setIndex];
-            const weightVal = appState.exerciseWeights[exerciseIndex][setIndex] || "";
-            const lastWeight = appState.userData.exerciseWeights[exercise.id] || "";
-            
-            html += `
-                <div class="set-row" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:8px;background:var(--bg-tertiary);border-radius:var(--radius-sm);">
-                    <div style="width:40px;font-size:12px;color:var(--text-secondary);">Set ${setIndex + 1}</div>
-                    
-                    <!-- Kilo Input -->
-                    <div style="flex:1;display:flex;align-items:center;background:var(--bg-secondary);border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,0.05);padding:4px 8px;">
-                        <input type="number" 
-                               class="weight-input" 
-                               placeholder="${lastWeight ? 'Son: ' + lastWeight : 'Kilo'}" 
-                               value="${weightVal}" 
-                               data-ex-idx="${exerciseIndex}" 
-                               data-set-idx="${setIndex}"
-                               style="background:transparent;border:none;color:var(--text-primary);width:100%;outline:none;font-size:14px;text-align:right;">
-                        <span style="font-size:12px;color:var(--text-muted);margin-left:4px;">kg</span>
-                    </div>
-
-                    <!-- Checkbox -->
-                    <button class="set-check-btn ${setCompleted ? 'checked' : ''}" 
-                            data-ex-idx="${exerciseIndex}" 
-                            data-set-idx="${setIndex}"
-                            style="width:32px;height:32px;border-radius:var(--radius-sm);border:2px solid ${setCompleted ? 'var(--accent-primary)' : 'rgba(255,255,255,0.2)'};background:${setCompleted ? 'var(--accent-primary)' : 'transparent'};color:${setCompleted ? 'white' : 'transparent'};display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s ease;">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:16px;height:16px;">
-                            <polyline points="20 6 9 17 4 12"/>
-                        </svg>
-                    </button>
-                </div>
-            `;
-        }
-
-        html += `
+    for (let i = startIdx; i < Math.min(startIdx + 3, exercises.length); i++) {
+        const exercise = exercises[i];
+        container.innerHTML += `
+            <div class="upcoming-exercise-item">
+                <div class="upcoming-exercise-num">${i + 1}</div>
+                <div class="upcoming-exercise-info">
+                    <div class="upcoming-exercise-name">${exercise.name}</div>
+                    <div class="upcoming-exercise-meta">${exercise.sets} set × ${exercise.reps} tekrar</div>
                 </div>
             </div>
         `;
-        container.innerHTML += html;
-    });
+    }
 
-    // Event Listeners for Weights
-    document.querySelectorAll('.weight-input').forEach(input => {
-        input.addEventListener('change', (e) => {
-            const exIdx = parseInt(e.target.dataset.exIdx);
-            const setIdx = parseInt(e.target.dataset.setIdx);
-            const val = e.target.value;
-            appState.exerciseWeights[exIdx][setIdx] = val;
-            
-            // update global exercise weight tracking
-            const exerciseId = appState.activeWorkout.exercises[exIdx].id;
-            if (val) {
-                appState.userData.exerciseWeights[exerciseId] = val;
-                saveUserData();
-            }
-        });
-    });
-
-    // Event Listeners for Checkboxes
-    document.querySelectorAll('.set-check-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const exIdx = parseInt(e.currentTarget.dataset.exIdx);
-            const setIdx = parseInt(e.currentTarget.dataset.setIdx);
-            const currentState = appState.completedSets[exIdx][setIdx];
-            
-            appState.completedSets[exIdx][setIdx] = !currentState;
-            
-            if (!currentState) {
-                // If checking, trigger rest timer
-                startRestTimer();
-            }
-            
-            // Re-render to show updated states and strikethroughs
-            renderWorkoutList();
-            updateWorkoutProgress();
-        });
-    });
+    if (container.innerHTML === '') {
+        container.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 16px;">Bu son egzersiz!</p>';
+    }
 }
 
 function updateWorkoutProgress() {
@@ -739,6 +777,47 @@ function updateWorkoutProgress() {
     const exercisesDoneSpan = document.getElementById('exercises-done');
     if(exercisesDoneSpan) {
         const completedExercises = appState.completedSets.filter(sets => sets.every(s => s)).length;
+        exercisesDoneSpan.textContent = completedExercises;
+    }
+}
+
+function completeSet() {
+    const currentSets = appState.completedSets[appState.currentExerciseIndex];
+    const allSetsCompleted = currentSets.every(s => s);
+
+    if (allSetsCompleted) {
+        const isLastExercise = appState.currentExerciseIndex === appState.activeWorkout.exercises.length - 1;
+
+        if (isLastExercise) {
+            completeWorkout();
+        } else {
+            appState.currentExerciseIndex++;
+            appState.currentSetIndex = 0;
+            renderCurrentExercise();
+            renderUpcomingExercises();
+            updateWorkoutProgress();
+        }
+    } else {
+        // Complete current set
+        appState.completedSets[appState.currentExerciseIndex][appState.currentSetIndex] = true;
+
+        if (appState.userData.settings.vibration && navigator.vibrate) navigator.vibrate(100);
+
+        // Auto-carry weight downward if next set is empty
+        const currentWeight = appState.exerciseWeights[appState.currentExerciseIndex][appState.currentSetIndex];
+        const nextSetIndex = currentSets.findIndex((s, i) => i > appState.currentSetIndex && !s);
+
+        if (nextSetIndex !== -1) {
+            const nextWeight = appState.exerciseWeights[appState.currentExerciseIndex][nextSetIndex];
+            if (!nextWeight && currentWeight) {
+                appState.exerciseWeights[appState.currentExerciseIndex][nextSetIndex] = currentWeight;
+            }
+            startRestTimer();
+            appState.currentSetIndex = nextSetIndex;
+        }
+
+        renderCurrentExercise();
+        updateWorkoutProgress();
     }
 }
 
